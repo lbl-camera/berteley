@@ -1,5 +1,5 @@
 # BERTeley
-Ushizima working with Mudit Mangal and Eric Chagnonin 2022
+Ushizima working with Mudit Mangal and Eric Chagnon in 2022
 
 ## Setting up the environment
 If working on a local machine use the following command conda create --name <env name> --file <env.txt>.
