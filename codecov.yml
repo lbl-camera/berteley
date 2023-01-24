@@ -1,0 +1,20 @@
+ignore:
+  - "berteley/_version.py"
+  - "setup.py"
+  - "versioneer.py"
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        paths:
+          - "berteley"
+        informational: true
+    patch:
+      default:
+        target: auto
+        paths:
+          - "berteley"
+        informational: true
+
