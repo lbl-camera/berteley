@@ -1,2 +1,13 @@
 versioneer
 wheel
+bertopic
+pytest
+pandas
+numpy
+scikit-learn
+gensim==4.2.0
+nltk
+spacy
+octis
+scipy
+setuptools
