@@ -68,3 +68,10 @@ def test_remove_extraspace():
 def test_remove_html():
     string1 = "\n\ni enjoy <p> going to the movies </p> with my friends\n"
     assert preprocessing.remove_html(string1) == "\n\ni enjoy   going to the movies   with my friends\n"
+
+
+def test_preprocess():
+    string1 = "Good afternoon, I'm here for my 12:30 x-ray appointment with Dr. Ushizima."
+    docs = [string1]
+
+    assert preprocessing.preprocess(docs) == ["good afternoon appointment dr ushizima"]
