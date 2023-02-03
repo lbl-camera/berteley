@@ -5,7 +5,7 @@ pytest
 pandas
 numpy
 scikit-learn
-gensim==4.2.0
+gensim
 nltk
 spacy
 octis
@@ -13,3 +13,6 @@ scipy
 setuptools
 en_core_web_lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.5.0/en_core_web_lg-3.5.0-py3-none-any.whl
 kaleido
+bs4
+beautifulsoup4
+contractions

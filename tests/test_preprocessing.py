@@ -23,11 +23,14 @@ def test_combine_hyphens():
     assert preprocessing.combine_hyphens(string8) == hyphen_string
 
 
-def test_remove_punct_df():
+def test_remove_punctuation():
     string1 = "I'm a test string!"
-    string2 = "I,m a test_ string"
-    assert preprocessing.remove_punct_df(string1) == "im a test string"
-    assert preprocessing.remove_punct_df(string2) == "im a test string"
+    string2 = "I,m a ! test_ string"
+    assert preprocessing.remove_punctuation(string1) == "Im a test string"
+    assert preprocessing.remove_punctuation(string2) == "Im a  test string"
+
+    string3 = 'x-ray'
+    assert preprocessing.remove_punctuation(string3) == "xray"
 
 
 def test_lemmatize():
@@ -52,3 +55,16 @@ def test_input_errors():
         preprocessing.remove_stop_df(123)
     with pytest.raises(TypeError):
         preprocessing.remove_stop_df("abc", "True")
+
+def test_expand_contractions():
+    string1 = "I\'ll be there within 5 minutes"
+    assert preprocessing.expand_contractions(string1) == "I will be there within 5 minutes"
+
+def test_remove_extraspace():
+    string1 = "\n\ni enjoy   going to the movies   with my friends\n"
+    assert preprocessing.remove_extraspace(string1) == "i enjoy going to the movies with my friends"
+
+
+def test_remove_html():
+    string1 = "\n\ni enjoy <p> going to the movies </p> with my friends\n"
+    assert preprocessing.remove_html(string1) == "\n\ni enjoy   going to the movies   with my friends\n"
