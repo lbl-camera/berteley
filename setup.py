@@ -24,6 +24,7 @@ setup(
         'Development Status :: 2 - Pre-Alpha',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: BSD License',
     ],
     description="Topic modeling for scientific articles using BERTopic",
     entry_points={
