@@ -1,4 +1,3 @@
-versioneer
 wheel
 bertopic
 pytest
