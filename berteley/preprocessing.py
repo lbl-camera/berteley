@@ -19,6 +19,7 @@ class Preprocessing:
 
 def combine_hyphens(row_string):
     '''
+    DEPRECATED
     combines hyphenated words into a single word
     Examples:
     x-ray -> xray
@@ -129,8 +130,9 @@ def remove_stopwords(row_string, allow_abbrev=True):
     return filtered_ip
 
 
-def format_dataframe(df):
+def __format_dataframe(df):
     '''
+    DEPRECATED
     The ALS data has some extra fields that are not needed, we only want to keep
     Authors, Pub Year, Research Area, Pub TYpe
     Create a new field 'Combined' which is the concatenation of the Title and Abstract

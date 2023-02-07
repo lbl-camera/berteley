@@ -3,6 +3,7 @@ import pytest
 
 
 def test_combine_hyphens():
+    # deprecated
     string1 = "-this is A test string"
     string2 = "this is A test string-"
     string3 = "this-is A test string"
@@ -40,8 +41,8 @@ def test_lemmatize():
 
 def test_remove_stop_df():
     string1 = "iii ion light advanced words ab"
-    assert preprocessing.remove_stop_df(string1, allow_abbrev=True) == 'ion words ab'
-    assert preprocessing.remove_stop_df(string1, allow_abbrev=False) == 'ion words'
+    assert preprocessing.remove_stopwords(string1, allow_abbrev=True) == 'ion words ab'
+    assert preprocessing.remove_stopwords(string1, allow_abbrev=False) == 'ion words'
 
 
 def test_input_errors():
@@ -52,13 +53,15 @@ def test_input_errors():
     with pytest.raises(TypeError):
         preprocessing.lemmatize(123)
     with pytest.raises(TypeError):
-        preprocessing.remove_stop_df(123)
+        preprocessing.remove_stopwords(123)
     with pytest.raises(TypeError):
-        preprocessing.remove_stop_df("abc", "True")
+        preprocessing.remove_stopwords("abc", "True")
+
 
 def test_expand_contractions():
     string1 = "I\'ll be there within 5 minutes"
     assert preprocessing.expand_contractions(string1) == "I will be there within 5 minutes"
+
 
 def test_remove_extraspace():
     string1 = "\n\ni enjoy   going to the movies   with my friends\n"
