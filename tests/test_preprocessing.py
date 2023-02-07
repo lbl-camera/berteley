@@ -3,6 +3,7 @@ import pytest
 
 
 def test_combine_hyphens():
+    # deprecated
     string1 = "-this is A test string"
     string2 = "this is A test string-"
     string3 = "this-is A test string"
