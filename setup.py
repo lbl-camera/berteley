@@ -59,5 +59,5 @@ setup(
         'tests': dev,
         'docs': docs
     },
-    setup_requires = wheel
+    setup_requires = ["wheel"]
 )
