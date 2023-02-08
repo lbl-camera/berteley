@@ -1,2 +1,4 @@
 pytest
 scikit-learn
+codecov
+pytest-cov
