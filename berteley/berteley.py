@@ -7,6 +7,7 @@ from bertopic import BERTopic
 from gensim.models.coherencemodel import CoherenceModel
 from octis.evaluation_metrics.coherence_metrics import Coherence
 from octis.evaluation_metrics.diversity_metrics import TopicDiversity
+from sentence_transformers import SentenceTransformer, models
 
 nltk.download('stopwords')
 
@@ -45,6 +46,24 @@ class BERTeley:
         else:
             raise AttributeError("n_gram_type must equal \"unigram\" or \"bigram\" ")
 
+        if isinstance(embedding_model, str):
+            if embedding_model.lower() == "specter":
+                embedding_model = SentenceTransformer('allenai-specter')
+
+            elif embedding_model.lower() == "aspire":
+                word_embedding_model = models.Transformer('allenai/aspire-sentence-embedder', max_seq_length=512)
+                pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(), pooling_mode='cls')
+                embedding_model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
+
+            elif embedding_model.lower() == "scibert":
+                word_embedding_model = models.Transformer('allenai/scibert_scivocab_uncased', max_seq_length=512)
+                pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(), pooling_mode='cls')
+                embedding_model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
+
+            else:
+                raise AttributeError("embedding model should either be a string specifying one of the 3 pre-loaded "
+                                     "models, or the desired language model")
+
         self.embedding_model = embedding_model
         self.nr_topics = nr_topics
 
@@ -73,9 +92,15 @@ class BERTeley:
         """
 
         topic_model = self.__BERTopic
+        topic_words = {}
+        topic_dict = topic_model.topic_representations_
+        for k in topic_dict.keys():
+            topic_words[k] = [x[0] for x in topic_dict[k]]
+        word_list = list(topic_words.values())
+        word_list.pop(0)
 
         # octis requires the texts input be in the form of a list of list of strings
-        octis_texts = [sentence.split() for sentence in list_text]
+        octis_texts = [sentence.split() for sentence in texts]
 
         npmi = Coherence(texts=octis_texts, topk=10, measure='c_npmi')
         topic_diversity = TopicDiversity(topk=10)
@@ -100,15 +125,8 @@ class BERTeley:
 
         # unigram
         else:
-            bertopic_topics = [
-                [
-                    vals[0] if vals[0] in all_words else all_words[0]
-                    for vals in topic_model.get_topic(i)[:10]
-                ]
-                for i in range(len(set(self.topics)) - 1)
-            ]
 
-            output_tm = {"topics": bertopic_topics}
+            output_tm = {"topics": word_list}
 
             coherence_score = npmi.score(output_tm)
 
@@ -132,14 +150,14 @@ class BERTeley:
         :returns  the coherence score which ranges from [-1, 1]
         """
 
-        docs = texts
 
+        #
         # Preprocess Documents
-        documents = pd.DataFrame({"Document": docs,
-                                  "ID": range(len(docs)),
-                                  "Topic": self.topics})
-        documents_per_topic = documents.groupby(['Topic'], as_index=False).agg({'Document': ' '.join})
-        cleaned_docs = topic_model._preprocess_text(documents_per_topic.Document.values)
+        # documents = pd.DataFrame({"Document": docs,
+        #                           "ID": range(len(docs)),
+        #                           "Topic": self.topics})
+        # documents_per_topic = documents.groupby(['Topic'], as_index=False).agg({'Document': ' '.join})
+        # cleaned_docs = topic_model._preprocess_text(documents_per_topic.Document.values)
 
         # Extract vectorizer and analyzer from BERTopic
         vectorizer = topic_model.vectorizer_model
@@ -147,7 +165,7 @@ class BERTeley:
 
         # Extract features for Topic Coherence evaluation
         words = vectorizer.get_feature_names()
-        tokens = [analyzer(doc) for doc in cleaned_docs]
+        tokens = [analyzer(doc) for doc in texts]
         dictionary = corpora.Dictionary(tokens)
         corpus = [dictionary.doc2bow(token) for token in tokens]
         topic_words = [[words for words, _ in topic_model.get_topic(topic)]
