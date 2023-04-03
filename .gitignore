@@ -33,6 +33,9 @@ wheels/
 
 # Installer logs
 pip-log.txt
+
+# Mac metadata
+.DS_Store
 pip-delete-this-directory.txt
 
 # Unit test / coverage reports

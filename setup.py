@@ -16,6 +16,16 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
     requirements = [line for line in requirements_file.read().splitlines()
                     if not line.startswith('#')]
 
+with open(path.join(here, 'requirements-dev.txt')) as requirements_file:
+    # Parse requirements.txt, ignoring any commented-out lines.
+    dev = [line for line in requirements_file.read().splitlines()
+                    if not line.startswith('#')]
+
+with open(path.join(here, 'requirements-docs.txt')) as requirements_file:
+    # Parse requirements.txt, ignoring any commented-out lines.
+    docs = [line for line in requirements_file.read().splitlines()
+                    if not line.startswith('#')]
+
 setup(
     author="Eric Chagnon",
     author_email='eric.chagnon15@gmail.com',
@@ -24,6 +34,7 @@ setup(
         'Development Status :: 2 - Pre-Alpha',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: BSD License',
     ],
     description="Topic modeling for scientific articles using BERTopic",
     entry_points={
@@ -45,7 +56,8 @@ setup(
     cmdclass=versioneer.get_cmdclass(),
     zip_safe=False,
     extras_require={
-        'tests': ['pytest', 'codecov', 'pytest-cov'],
-        'docs': ['sphinx', 'sphinx-rtd-theme', 'myst-parser', 'myst-nb', 'sphinx-panels', 'autodocs']
-    }
+        'tests': dev,
+        'docs': docs
+    },
+    setup_requires = ["wheel"]
 )
