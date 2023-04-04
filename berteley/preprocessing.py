@@ -8,10 +8,16 @@ from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 import contractions
 from joblib import delayed, Parallel
+import csv
 
 nltk.download('stopwords')
 
 nlp = spacy.load('en_core_web_lg')
+
+file = open("../berteley_stopwords.csv", "r")
+data = list(csv.reader(file, delimiter=","))
+
+STOPWORDS = [x[0] for x in data]
 
 
 class Preprocessing:
@@ -20,7 +26,7 @@ class Preprocessing:
 
 
 def combine_hyphens(row_string):
-    '''
+    """
     combines hyphenated words into a single word
     Examples:
     x-ray -> xray
@@ -31,7 +37,7 @@ def combine_hyphens(row_string):
 
     Output:
     a string with no hyphenated words
-    '''
+    """
 
     if not isinstance(row_string, str):
         raise TypeError("row_string must be a string")
@@ -42,7 +48,7 @@ def combine_hyphens(row_string):
 
 
 def remove_punctuation(doc):
-    '''
+    """
     Removes all punctuation from a string using the punctuation list in the string library
 
     Input:
@@ -50,13 +56,13 @@ def remove_punctuation(doc):
 
     Output:
     a string with no punctuation
-    '''
+    """
 
     return doc.translate(str.maketrans('', '', string.punctuation))
 
 
 def lemmatize(row_string):
-    '''
+    """
     This function utilizes the lemmatizer in the spacy package to lemmatize all the words in the list
 
     Input:
@@ -64,7 +70,7 @@ def lemmatize(row_string):
 
     Output:
     a string with lemmatized words
-    '''
+    """
 
     if not isinstance(row_string, str):
         raise TypeError("row_string must be a string")
@@ -99,23 +105,13 @@ def remove_stopwords(row_string, allow_abbrev=True):
         raise TypeError("allow_abbrev must be a boolean")
 
     filt_combined = []
-    als_stopwords = ['use', 'award', 'prize', 'academy', 'thailand', 'high', 'scientist', 'medal',
-                     'science',
-                     'fellow', 'career', 'presentation', 'early', 'shirley', 'david', 'achievement',
-                     'student',
-                     'society', 'light', 'beamline', 'xray', 'bind', 'ii', 'iii', 'iv', 'vii', 'viii',
-                     'study', 'state', 'site', 'domain', 'advanced', 'light', 'source', 'background',
-                     'materials',
-                     'methods', 'user', 'facility', 'particle', 'accelerator', 'symposium', 'research',
-                     'international', 'symposium', 'model', 'use', 'result', 'show', 'propose', 'also', 'two', 'et',
-                     'al']
 
     for word in word_tokenize(row_string):
         contains_letter = re.search('[a-zA-Z]', word) is not None
         stopword_check = word.lower() not in stopwords.words('english')
-        als_stopword_check = word.lower() not in als_stopwords
+        berteley_stopword_check = word.lower() not in STOPWORDS
 
-        if contains_letter and stopword_check and als_stopword_check:
+        if contains_letter and stopword_check and berteley_stopword_check:
             if not allow_abbrev:
                 if len(word.lower()) > 2:
                     filt_combined.append(word)
@@ -126,12 +122,13 @@ def remove_stopwords(row_string, allow_abbrev=True):
                 else:
                     filt_combined.append(word)
 
-        filtered_ip = " ".join(filt_combined)
+    filtered_ip = " ".join(filt_combined)
+    filt_combined = []
     return filtered_ip
 
 
 def format_dataframe(df):
-    '''
+    """
     The ALS data has some extra fields that are not needed, we only want to keep
     Authors, Pub Year, Research Area, Pub TYpe
     Create a new field 'Combined' which is the concatenation of the Title and Abstract
@@ -142,7 +139,7 @@ def format_dataframe(df):
 
     Output:
     newly formated dataframe with proper fields
-    '''
+    """
 
     # remove entries that dont have an abstract
     df = df[df['Abstract'].notna()]
@@ -165,8 +162,8 @@ def format_dataframe(df):
     pattern = r'<inf>|</inf>|<sup>|</sup>|inf|/inf'
     comb_clean = []
 
-    for l in combined:
-        mod_string = re.sub(pattern, '', str(l))
+    for s in combined:
+        mod_string = re.sub(pattern, '', str(s))
         comb_clean.append(mod_string)
 
     # merge back to df
@@ -198,11 +195,13 @@ def expand_contractions(doc):
     return contractions.fix(doc)
 
 
-def preprocess(docs: [str]):
+def preprocess(docs: [str], allow_abbrev=True):
     """
     Wrapper function for all the preprocessing steps
 
     :param docs a list of strings containing the raw text data
+    :param allow_abbrev a boolean indicating whether you
+    want abbreviations to be allowed or not. If set to False this will remove strings that have length less than 3.
 
     returns a list of strings containing text data resulting from the preprocessing steps
     """
@@ -232,11 +231,11 @@ def preprocess(docs: [str]):
     # remove empty strings again
     cleaned_docs = list(filter(len, cleaned_docs))
 
-    # remove stopwords
-    cleaned_docs = [remove_stopwords(s) for s in cleaned_docs]
-
     # lemmatize
     cleaned_docs = [lemmatize(s) for s in cleaned_docs]
+
+    # remove stopwords
+    cleaned_docs = [remove_stopwords(s, allow_abbrev=allow_abbrev) for s in cleaned_docs]
 
     # remove strings with small length
     cleaned_docs = [s for s in cleaned_docs if len(s.split()) > 10]
@@ -244,7 +243,7 @@ def preprocess(docs: [str]):
     return cleaned_docs
 
 
-def parallel_helper(docs, allow_abrev):
+def parallel_helper(docs, allow_abbrev):
     # remove all html tags
     cleaned_docs = [remove_html(s) for s in docs]
 
@@ -268,7 +267,7 @@ def parallel_helper(docs, allow_abrev):
     cleaned_docs = list(filter(len, cleaned_docs))
 
     # remove stopwords
-    cleaned_docs = [remove_stopwords(s, allow_abrev) for s in cleaned_docs]
+    cleaned_docs = [remove_stopwords(s, allow_abbrev) for s in cleaned_docs]
 
     # lemmatize
     cleaned_docs = [lemmatize(s) for s in cleaned_docs]
@@ -289,7 +288,7 @@ def preprocess_parallel(docs, n_workers=4, allow_abbrev=True):
     # docs must be a list of strings
     partitions = [list(p) for p in partitions]
 
-    clean_docs = Parallel(n_jobs=n_workers)(delayed(parallel_helper)(p) for p in partitions)
+    clean_docs = Parallel(n_jobs=n_workers)(delayed(parallel_helper)(p, allow_abbrev) for p in partitions)
     # flatten the list of lists into a single list
     clean_docs = [item for sublist in clean_docs for item in sublist]
 

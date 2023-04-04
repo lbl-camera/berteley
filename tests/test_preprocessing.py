@@ -39,7 +39,7 @@ def test_lemmatize():
     assert preprocessing.lemmatize(string1) == 'there be a lot of world in the galaxy'
 
 
-def test_remove_stop_df():
+def test_remove_stopwords():
     string1 = "iii ion light advanced words ab"
     assert preprocessing.remove_stopwords(string1, allow_abbrev=True) == 'ion words ab'
     assert preprocessing.remove_stopwords(string1, allow_abbrev=False) == 'ion words'
@@ -78,3 +78,9 @@ def test_preprocess():
     docs = [string1]
 
     assert preprocessing.preprocess(docs) == ["good afternoon appointment dr ushizima"]
+
+
+def test_preprocess_parallel():
+    string1 = "this model will use the following setup: a large encoder followed by a simple decoding stage."
+    string2 = "At the Advanced Light Source we use a lot of equipment"
+    assert preprocessing.preprocess_parallel([string1, string2], allow_abbrev=False, n_workers=2) == ['follow setup large encoder follow simple decoding stage', 'lot equipment']

@@ -79,13 +79,13 @@ class BERTeley:
         self.topics = None
         self.__probs = None
 
-    def __calculate_metrics__(self, list_text):
+    def __calculate_metrics__(self, texts):
         """
         calculates the topic Coherence and topic Diversity for a given topic model, and saves the values
         in respective attributes
 
 
-        :param list_text: the list of documents the BERTopic model was trained on, this is a list of strings
+        :param texts: the list of documents the BERTopic model was trained on, this is a list of strings
 
 
         :returns: none
@@ -121,7 +121,7 @@ class BERTeley:
 
             output_tm = {"topics": bertopic_topics}
 
-            coherence_score = self.__calculate_coherence__(topic_model, list_text)
+            coherence_score = self.__calculate_coherence__(topic_model, texts)
 
         # unigram
         else:
@@ -136,7 +136,7 @@ class BERTeley:
         self.diversity = diversity_score
         # return {"Coherence": coherence_score, "Diversity": diversity_score}
 
-    def __calculate_coherence__(self, topic_model, texts):
+    def __calculate_coherence__(self, topic_model, docs):
 
         """
         Calculates the coherence metric for bigrams
@@ -153,11 +153,11 @@ class BERTeley:
 
         #
         # Preprocess Documents
-        # documents = pd.DataFrame({"Document": docs,
-        #                           "ID": range(len(docs)),
-        #                           "Topic": self.topics})
-        # documents_per_topic = documents.groupby(['Topic'], as_index=False).agg({'Document': ' '.join})
-        # cleaned_docs = topic_model._preprocess_text(documents_per_topic.Document.values)
+        documents = pd.DataFrame({"Document": docs,
+                                  "ID": range(len(docs)),
+                                  "Topic": self.topics})
+        documents_per_topic = documents.groupby(['Topic'], as_index=False).agg({'Document': ' '.join})
+        cleaned_docs = topic_model._preprocess_text(documents_per_topic.Document.values)
 
         # Extract vectorizer and analyzer from BERTopic
         vectorizer = topic_model.vectorizer_model
@@ -165,7 +165,7 @@ class BERTeley:
 
         # Extract features for Topic Coherence evaluation
         words = vectorizer.get_feature_names()
-        tokens = [analyzer(doc) for doc in texts]
+        tokens = [analyzer(doc) for doc in cleaned_docs]
         dictionary = corpora.Dictionary(tokens)
         corpus = [dictionary.doc2bow(token) for token in tokens]
         topic_words = [[words for words, _ in topic_model.get_topic(topic)]
