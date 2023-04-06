@@ -7,6 +7,7 @@ from bertopic import BERTopic
 from gensim.models.coherencemodel import CoherenceModel
 from octis.evaluation_metrics.coherence_metrics import Coherence
 from octis.evaluation_metrics.diversity_metrics import TopicDiversity
+from sentence_transformers import SentenceTransformer, models
 
 nltk.download('stopwords')
 
@@ -45,6 +46,24 @@ class BERTeley:
         else:
             raise AttributeError("n_gram_type must equal \"unigram\" or \"bigram\" ")
 
+        if isinstance(embedding_model, str):
+            if embedding_model.lower() == "specter":
+                embedding_model = SentenceTransformer('allenai-specter')
+
+            elif embedding_model.lower() == "aspire":
+                word_embedding_model = models.Transformer('allenai/aspire-sentence-embedder', max_seq_length=512)
+                pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(), pooling_mode='cls')
+                embedding_model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
+
+            elif embedding_model.lower() == "scibert":
+                word_embedding_model = models.Transformer('allenai/scibert_scivocab_uncased', max_seq_length=512)
+                pooling_model = models.Pooling(word_embedding_model.get_word_embedding_dimension(), pooling_mode='cls')
+                embedding_model = SentenceTransformer(modules=[word_embedding_model, pooling_model])
+
+            else:
+                raise AttributeError("embedding model should either be a string specifying one of the 3 pre-loaded "
+                                     "models, or the desired language model")
+
         self.embedding_model = embedding_model
         self.nr_topics = nr_topics
 
@@ -60,22 +79,28 @@ class BERTeley:
         self.topics = None
         self.__probs = None
 
-    def __calculate_metrics__(self, list_text):
+    def __calculate_metrics__(self, texts):
         """
         calculates the topic Coherence and topic Diversity for a given topic model, and saves the values
         in respective attributes
 
 
-        :param list_text: the list of documents the BERTopic model was trained on, this is a list of strings
+        :param texts: the list of documents the BERTopic model was trained on, this is a list of strings
 
 
         :returns: none
         """
 
         topic_model = self.__BERTopic
+        topic_words = {}
+        topic_dict = topic_model.topic_representations_
+        for k in topic_dict.keys():
+            topic_words[k] = [x[0] for x in topic_dict[k]]
+        word_list = list(topic_words.values())
+        word_list.pop(0)
 
         # octis requires the texts input be in the form of a list of list of strings
-        octis_texts = [sentence.split() for sentence in list_text]
+        octis_texts = [sentence.split() for sentence in texts]
 
         npmi = Coherence(texts=octis_texts, topk=10, measure='c_npmi')
         topic_diversity = TopicDiversity(topk=10)
@@ -96,19 +121,12 @@ class BERTeley:
 
             output_tm = {"topics": bertopic_topics}
 
-            coherence_score = self.__calculate_coherence__(topic_model, list_text)
+            coherence_score = self.__calculate_coherence__(topic_model, texts)
 
         # unigram
         else:
-            bertopic_topics = [
-                [
-                    vals[0] if vals[0] in all_words else all_words[0]
-                    for vals in topic_model.get_topic(i)[:10]
-                ]
-                for i in range(len(set(self.topics)) - 1)
-            ]
 
-            output_tm = {"topics": bertopic_topics}
+            output_tm = {"topics": word_list}
 
             coherence_score = npmi.score(output_tm)
 
@@ -118,7 +136,7 @@ class BERTeley:
         self.diversity = diversity_score
         # return {"Coherence": coherence_score, "Diversity": diversity_score}
 
-    def __calculate_coherence__(self, topic_model, texts):
+    def __calculate_coherence__(self, topic_model, docs):
 
         """
         Calculates the coherence metric for bigrams
@@ -132,8 +150,8 @@ class BERTeley:
         :returns  the coherence score which ranges from [-1, 1]
         """
 
-        docs = texts
 
+        #
         # Preprocess Documents
         documents = pd.DataFrame({"Document": docs,
                                   "ID": range(len(docs)),

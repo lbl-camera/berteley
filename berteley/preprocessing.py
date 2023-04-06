@@ -1,25 +1,30 @@
 import re
 import string
 import spacy
+import numpy as np
 from nltk.tokenize import word_tokenize
 import nltk
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 import contractions
+from joblib import delayed, Parallel
+import csv
 
 nltk.download('stopwords')
 
 nlp = spacy.load('en_core_web_lg')
+#
+file = open("berteley/berteley_stopwords.csv", "r")
+data = list(csv.reader(file, delimiter=","))
+
+STOPWORDS = [x[0] for x in data]
 
 
-class Preprocessing:
-    def __init__(self):
-        x = 5
+
 
 
 def combine_hyphens(row_string):
-    '''
-    DEPRECATED
+    """
     combines hyphenated words into a single word
     Examples:
     x-ray -> xray
@@ -30,7 +35,7 @@ def combine_hyphens(row_string):
 
     Output:
     a string with no hyphenated words
-    '''
+    """
 
     if not isinstance(row_string, str):
         raise TypeError("row_string must be a string")
@@ -41,7 +46,7 @@ def combine_hyphens(row_string):
 
 
 def remove_punctuation(doc):
-    '''
+    """
     Removes all punctuation from a string using the punctuation list in the string library
 
     Input:
@@ -49,13 +54,13 @@ def remove_punctuation(doc):
 
     Output:
     a string with no punctuation
-    '''
+    """
 
     return doc.translate(str.maketrans('', '', string.punctuation))
 
 
 def lemmatize(row_string):
-    '''
+    """
     This function utilizes the lemmatizer in the spacy package to lemmatize all the words in the list
 
     Input:
@@ -63,7 +68,7 @@ def lemmatize(row_string):
 
     Output:
     a string with lemmatized words
-    '''
+    """
 
     if not isinstance(row_string, str):
         raise TypeError("row_string must be a string")
@@ -79,7 +84,7 @@ def lemmatize(row_string):
 
 
 def remove_stopwords(row_string, allow_abbrev=True):
-    '''
+    """
     This function utilizes the stopwords in the nltk package to remove the stopwords from the string.
     Some further steps were taken for the specific ALS use case including removal of words that do not contain a letter
     and words that are in the supplemental stopword list created after looking at initial outputs from early iterations of the topic model
@@ -89,7 +94,7 @@ def remove_stopwords(row_string, allow_abbrev=True):
 
     Output:
     a string with removed stopwords
-    '''
+    """
 
     if not isinstance(row_string, str):
         raise TypeError("row_string must be a string")
@@ -98,23 +103,13 @@ def remove_stopwords(row_string, allow_abbrev=True):
         raise TypeError("allow_abbrev must be a boolean")
 
     filt_combined = []
-    als_stopwords = als_stopwords = ['use', 'award', 'prize', 'academy', 'thailand', 'high', 'scientist', 'medal',
-                                     'science',
-                                     'fellow', 'career', 'presentation', 'early', 'shirley', 'david', 'achievement',
-                                     'student',
-                                     'society', 'light', 'beamline', 'xray', 'bind', 'ii', 'iii', 'iv', 'vii', 'viii',
-                                     'study', 'state', 'site', 'domain', 'advanced', 'light', 'source', 'background',
-                                     'materials',
-                                     'methods', 'user', 'facility', 'particle', 'accelerator', 'symposium', 'research',
-                                     'international',
-                                     'symposium']
 
     for word in word_tokenize(row_string):
         contains_letter = re.search('[a-zA-Z]', word) is not None
         stopword_check = word.lower() not in stopwords.words('english')
-        als_stopword_check = word.lower() not in als_stopwords
+        berteley_stopword_check = word.lower() not in STOPWORDS
 
-        if contains_letter and stopword_check and als_stopword_check:
+        if contains_letter and stopword_check and berteley_stopword_check:
             if not allow_abbrev:
                 if len(word.lower()) > 2:
                     filt_combined.append(word)
@@ -125,14 +120,13 @@ def remove_stopwords(row_string, allow_abbrev=True):
                 else:
                     filt_combined.append(word)
 
-        filtered_ip = " ".join(filt_combined)
+    filtered_ip = " ".join(filt_combined)
 
     return filtered_ip
 
 
-def __format_dataframe(df):
-    '''
-    DEPRECATED
+def format_dataframe(df):
+    """
     The ALS data has some extra fields that are not needed, we only want to keep
     Authors, Pub Year, Research Area, Pub TYpe
     Create a new field 'Combined' which is the concatenation of the Title and Abstract
@@ -143,7 +137,7 @@ def __format_dataframe(df):
 
     Output:
     newly formated dataframe with proper fields
-    '''
+    """
 
     # remove entries that dont have an abstract
     df = df[df['Abstract'].notna()]
@@ -166,8 +160,8 @@ def __format_dataframe(df):
     pattern = r'<inf>|</inf>|<sup>|</sup>|inf|/inf'
     comb_clean = []
 
-    for l in combined:
-        mod_string = re.sub(pattern, '', str(l))
+    for s in combined:
+        mod_string = re.sub(pattern, '', str(s))
         comb_clean.append(mod_string)
 
     # merge back to df
@@ -199,14 +193,19 @@ def expand_contractions(doc):
     return contractions.fix(doc)
 
 
-def preprocess(docs: [str]):
+def preprocess(docs: [str], allow_abbrev=True):
     """
     Wrapper function for all the preprocessing steps
 
     :param docs a list of strings containing the raw text data
+    :param allow_abbrev a boolean indicating whether you
+    want abbreviations to be allowed or not. If set to False this will remove strings that have length less than 3.
 
     returns a list of strings containing text data resulting from the preprocessing steps
     """
+
+    # remove all empty strings
+    docs = list(filter(len, docs))
 
     # remove all html tags
     cleaned_docs = [remove_html(s) for s in docs]
@@ -224,12 +223,71 @@ def preprocess(docs: [str]):
     cleaned_docs = [remove_punctuation(s) for s in cleaned_docs]
 
     # remove excess white space
+
     cleaned_docs = [remove_extraspace(s) for s in cleaned_docs]
 
-    # remove stopwords
-    cleaned_docs = [remove_stopwords(s) for s in cleaned_docs]
+    # remove empty strings again
+    cleaned_docs = list(filter(len, cleaned_docs))
 
     # lemmatize
     cleaned_docs = [lemmatize(s) for s in cleaned_docs]
 
+    # remove stopwords
+    cleaned_docs = [remove_stopwords(s, allow_abbrev=allow_abbrev) for s in cleaned_docs]
+
+    # remove strings with small length
+    cleaned_docs = [s for s in cleaned_docs if len(s.split()) > 10]
+
     return cleaned_docs
+
+
+def parallel_helper(docs, allow_abbrev):
+    # remove all html tags
+    cleaned_docs = [remove_html(s) for s in docs]
+
+    # remove/change numbers
+
+    # expand contractions (don't -> do not)
+    cleaned_docs = [expand_contractions(s) for s in cleaned_docs]
+
+    # lower case
+    cleaned_docs = [s.lower() for s in cleaned_docs]
+
+    # remove all punctuation (make sure hyphenated words are properly combined
+    # and grammatical hyphens are spaced appropriately)
+    cleaned_docs = [remove_punctuation(s) for s in cleaned_docs]
+
+    # remove excess white space
+
+    cleaned_docs = [remove_extraspace(s) for s in cleaned_docs]
+
+    # remove empty strings again
+    cleaned_docs = list(filter(len, cleaned_docs))
+
+    # remove stopwords
+    cleaned_docs = [remove_stopwords(s, allow_abbrev) for s in cleaned_docs]
+
+    # lemmatize
+    cleaned_docs = [lemmatize(s) for s in cleaned_docs]
+
+    # remove strings with small length
+    cleaned_docs = [s for s in cleaned_docs if len(s.split()) > 10]
+
+    return cleaned_docs
+
+
+def preprocess_parallel(docs, n_workers=4, allow_abbrev=True):
+    # remove all empty strings
+    docs = list(filter(len, docs))
+
+    # split the docs equally among the workers
+    partitions = np.array_split(docs, n_workers)
+
+    # docs must be a list of strings
+    partitions = [list(p) for p in partitions]
+
+    clean_docs = Parallel(n_jobs=n_workers)(delayed(parallel_helper)(p, allow_abbrev) for p in partitions)
+    # flatten the list of lists into a single list
+    clean_docs = [item for sublist in clean_docs for item in sublist]
+
+    return clean_docs

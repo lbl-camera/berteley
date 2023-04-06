@@ -11,10 +11,24 @@ Topic modeling for scientific articles using BERTopic
 
 * License: BSD license
 * Documentation: https://berteley.readthedocs.io.
+## Installation
+```commandline
+pip install berteley
+```
+
+## Quick Start
+
+```python
+# code snippet showing very basic usage
+```
+
+Topic Modeling with BERTopic  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1FieRA9fLdkQEGDIMYl0I3MCjSUKVF8C-?usp=sharing)
 
 ## Features
 
-* TODO
+* A text pre-processing suite tailored for scientific articles. Including a curated stopword list.
+* 3 readily available language models that are trained on scientific articles.
+* Real time metric calculation for topic model comparison.
 
 ## Credits
 
