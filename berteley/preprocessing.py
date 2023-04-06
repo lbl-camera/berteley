@@ -14,7 +14,7 @@ nltk.download('stopwords')
 
 nlp = spacy.load('en_core_web_lg')
 
-file = open("../berteley_stopwords.csv", "r")
+file = open("berteley_stopwords.csv", "r")
 data = list(csv.reader(file, delimiter=","))
 
 STOPWORDS = [x[0] for x in data]
