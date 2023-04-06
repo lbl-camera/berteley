@@ -74,13 +74,13 @@ def test_remove_html():
 
 
 def test_preprocess():
-    string1 = "Good afternoon, I'm here for my 12:30 x-ray appointment with Dr. Ushizima."
+    string1 = "Good afternoon, I'm here for my 12:30 x-ray appointment with Dr. Ushizima. I was wondering if it would be possible to get a follow up appointment?"
     docs = [string1]
 
-    assert preprocessing.preprocess(docs) == ["good afternoon appointment dr ushizima"]
+    assert preprocessing.preprocess(docs) == ["good afternoon xray appointment dr ushizima wonder would possible get follow appointment"]
 
 
 def test_preprocess_parallel():
-    string1 = "this model will use the following setup: a large encoder followed by a simple decoding stage."
+    string1 = "follow setup large encoder follow simple decoding stage initial step input text convert vector"
     string2 = "At the Advanced Light Source we use a lot of equipment"
-    assert preprocessing.preprocess_parallel([string1, string2], allow_abbrev=False, n_workers=2) == ['follow setup large encoder follow simple decoding stage', 'lot equipment']
+    assert preprocessing.preprocess_parallel([string1, string2], allow_abbrev=False, n_workers=2) == ["follow setup large encoder follow simple decoding stage initial step input text convert vector"]

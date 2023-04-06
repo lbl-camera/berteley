@@ -123,7 +123,7 @@ def remove_stopwords(row_string, allow_abbrev=True):
                     filt_combined.append(word)
 
     filtered_ip = " ".join(filt_combined)
-    filt_combined = []
+
     return filtered_ip
 
 
