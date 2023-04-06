@@ -10,3 +10,4 @@ recursive-exclude * *.py[co]
 recursive-include docs *.rst conf.py Makefile make.bat *.jpg *.png *.gif
 include versioneer.py
 include berteley/_version.py
+include berteley/berteley_stopwords.csv
