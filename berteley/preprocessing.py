@@ -13,7 +13,7 @@ import csv
 nltk.download('stopwords')
 
 nlp = spacy.load('en_core_web_lg')
-
+#
 file = open("berteley/berteley_stopwords.csv", "r")
 data = list(csv.reader(file, delimiter=","))
 
