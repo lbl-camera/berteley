@@ -20,9 +20,7 @@ data = list(csv.reader(file, delimiter=","))
 STOPWORDS = [x[0] for x in data]
 
 
-class Preprocessing:
-    def __init__(self):
-        x = 5
+
 
 
 def combine_hyphens(row_string):

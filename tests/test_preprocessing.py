@@ -83,4 +83,4 @@ def test_preprocess():
 def test_preprocess_parallel():
     string1 = "follow setup large encoder follow simple decoding stage initial step input text convert vector"
     string2 = "At the Advanced Light Source we use a lot of equipment"
-    assert preprocessing.preprocess_parallel([string1, string2], allow_abbrev=False, n_workers=2) == ["follow setup large encoder follow simple decoding stage initial step input text convert vector"]
+    assert preprocessing.preprocess_parallel([string1, string2], allow_abbrev=False, n_workers=2) == ["follow setup large encoder follow simple decode stage initial step input text convert vector"]
