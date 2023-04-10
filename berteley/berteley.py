@@ -140,7 +140,7 @@ class BERTeley:
         self.diversity = diversity_score
         # return {"Coherence": coherence_score, "Diversity": diversity_score}
 
-    def __calculate_coherence__(self, topic_model: BERTopic, docs: list[str]):
+    def __calculate_coherence__(self, topic_model: BERTopic, docs: List[str]):
 
         """
         Internal method for calculating the coherence when the n_gram_range is set to something other than (1,1)
@@ -185,7 +185,7 @@ class BERTeley:
         coherence = coherence_model.get_coherence()
         return coherence
 
-    def fit(self, data: list[str]):
+    def fit(self, data: List[str]):
         """
         Fits a BERTopic model on the data. After fitting the topic assigned to each document is stored
         in the 'topics' attribute, the coherence and diversity measures are stored in the
