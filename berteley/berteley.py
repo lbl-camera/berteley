@@ -1,5 +1,4 @@
 import collections
-
 import gensim.corpora as corpora
 import nltk
 import pandas as pd
@@ -8,6 +7,7 @@ from gensim.models.coherencemodel import CoherenceModel
 from octis.evaluation_metrics.coherence_metrics import Coherence
 from octis.evaluation_metrics.diversity_metrics import TopicDiversity
 from sentence_transformers import SentenceTransformer, models
+from typing import List
 
 nltk.download('stopwords')
 
@@ -81,7 +81,7 @@ class BERTeley:
         self.topics = None
         self.__probs = None
 
-    def __calculate_metrics__(self, texts: list[str]):
+    def __calculate_metrics__(self, texts: List[str]):
         """
         Calculates the Topic Coherence and Topic Diversity of the topic model.
         Parameters
