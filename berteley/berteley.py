@@ -14,26 +14,28 @@ nltk.download('stopwords')
 nltk.download('punkt')
 
 
-# import kaleido
-
-
 class BERTeley:
-    """
-    TODO documentation for the class
-    """
 
     def __init__(self,
-                 embedding_model=None,
-                 nr_topics=None,
-                 n_gram_type="unigram",
-                 verbose=False):
+                 embedding_model: SentenceTransformer = None,
+                 nr_topics: int = None,
+                 n_gram_type: str = "unigram",
+                 verbose: bool = False):
+
         """
-        :param embedding_model: a SentenceTransformer model used to encode the documents
-        :param nr_topics: desired number of topics, if not specified the number of topics
-        will be left up to the clustering algorithm
-        :param n_gram_type: a string "unigram" indicating you want unigram, "bigram" for bigram
-        :param verbose: boolean indicating if you want verbose outputs
+
+        Parameters
+        ----------
+        embedding_model
+                Either a SentenceTransformer, or a string with values "specter". "aspire", or "scibert".
+        nr_topics
+                The desired number of topics, if not specified the results will be determined by HDBSCAN's reduction step.
+        n_gram_type
+                String indicating whether the user would like unigram or bigram.
+        verbose
+                Boolean indicating verbose output.
         """
+
         if not isinstance(nr_topics, int) and nr_topics is not None:
             raise TypeError("nr_topics must be an int")
         if not isinstance(n_gram_type, str) and n_gram_type is not None:
@@ -79,16 +81,18 @@ class BERTeley:
         self.topics = None
         self.__probs = None
 
-    def __calculate_metrics__(self, texts):
+    def __calculate_metrics__(self, texts: list[str]):
         """
-        calculates the topic Coherence and topic Diversity for a given topic model, and saves the values
-        in respective attributes
+        Calculates the Topic Coherence and Topic Diversity of the topic model.
+        Parameters
+        ----------
+        texts
+             The list of documents
 
-
-        :param texts: the list of documents the BERTopic model was trained on, this is a list of strings
-
-
-        :returns: none
+        Returns
+        -------
+        dict
+            A dict containing the metrics as keys, and their respective scores as values.
         """
 
         topic_model = self.__BERTopic
@@ -136,22 +140,23 @@ class BERTeley:
         self.diversity = diversity_score
         # return {"Coherence": coherence_score, "Diversity": diversity_score}
 
-    def __calculate_coherence__(self, topic_model, docs):
+    def __calculate_coherence__(self, topic_model: BERTopic, docs: list[str]):
 
         """
-        Calculates the coherence metric for bigrams
+        Internal method for calculating the coherence when the n_gram_range is set to something other than (1,1)
+        Parameters
+        ----------
+        topic_model
+            The BERTopic object
+        docs
+            The list of documents
 
+        Returns
+        -------
+            The coherence score
 
-        Input
-        :param topic_model: the BERTopic model object
-        :param texts: list of documents used to train the BERTopic model, this is a list of strings
-
-        Output
-        :returns  the coherence score which ranges from [-1, 1]
         """
 
-
-        #
         # Preprocess Documents
         documents = pd.DataFrame({"Document": docs,
                                   "ID": range(len(docs)),
@@ -180,16 +185,24 @@ class BERTeley:
         coherence = coherence_model.get_coherence()
         return coherence
 
-    def fit(self, data):
+    def fit(self, data: list[str]):
         """
         Fits a BERTopic model on the data. After fitting the topic assigned to each document is stored
         in the 'topics' attribute, the coherence and diversity measures are stored in the
         'coherence' and 'diversity' attributes respectively, and the amount of documents assigned to each topic
         are stored in the 'topic_sizes' attribute.
 
-        data: the documents in the form of a list of strings
+        Parameters
+        ----------
+        data
+            List of the documents
+
+        Returns
+        -------
+        The function sets attributes for topics, probabilities, and metrics.
 
         """
+
         if not isinstance(data, list):
             raise TypeError("data must be a list of strings")
 
@@ -206,11 +219,14 @@ class BERTeley:
         counts the number of documents assigned to each topic and stores the topic sizes in the 'topic_sizes'
         attribute in the form of a dict.
 
-        Input:
-        none
+        Parameters
+        ----------
 
-        Output:
-        none
+
+        Returns
+        -------
+        Sets the topic size parameter to a collection object containing the topics and their sizes.
+
         """
 
         counter = collections.Counter(self.topics)
@@ -220,11 +236,15 @@ class BERTeley:
         """
         creates and saves the BERTopic barcharts
 
-        Input:
-        topic model: BERTopic object that has been fit with data
+        Parameters
+        ----------
+        path
+            A string containing the desired path to save the barchart
 
-        Output:
-        barcharts are saved in .html and .png format in the model directory
+        Returns
+        -------
+        Barcharts are saved in .html and .png format in the desired directory.
+
         """
 
         if not isinstance(path, str):
