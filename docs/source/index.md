@@ -10,6 +10,7 @@ maxdepth: 2
 caption: API
 ---
 api/berteley.md
+api/preprocessing.md
 ```
 
 # BERTeley

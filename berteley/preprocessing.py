@@ -9,14 +9,16 @@ from bs4 import BeautifulSoup
 import contractions
 from joblib import delayed, Parallel
 import csv
+from pathlib import Path
 
 from typing import List
 
 nltk.download('stopwords')
 
 nlp = spacy.load('en_core_web_lg')
+here = Path(__file__).parent
+file = open(here / "berteley_stopwords.csv", "r")
 
-file = open("berteley/berteley_stopwords.csv", "r")
 data = list(csv.reader(file, delimiter=","))
 
 STOPWORDS = [x[0] for x in data]
