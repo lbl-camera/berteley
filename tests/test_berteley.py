@@ -6,6 +6,8 @@ from sentence_transformers import SentenceTransformer
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
 
+from berteley.berteley import initialize_model
+
 # gets rid of extraneous warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -25,23 +27,22 @@ def test(data):
 def test_berteley_init():
     # modelPath = "../bert-base-nli-mean-tokens"
     with pytest.raises(AttributeError):
-        BERTeley(embedding_model="default")
+        initialize_model(embedding_model="default")
 
     with pytest.raises(TypeError):
-        BERTeley(nr_topics='2')
+        initialize_model(nr_topics='2')
 
     with pytest.raises(TypeError):
-        BERTeley(n_gram_type=2)
+        initialize_model(n_gram_type=2)
 
     with pytest.raises(AttributeError):
-        BERTeley(n_gram_type='2')
+        initialize_model(n_gram_type='2')
 
 
 def test_fit_input_type(data):
-    df = pd.DataFrame(data, columns=['Documents'])
-    test_df = BERTeley()
+    df = {"data": data}
     with pytest.raises(TypeError):
-        test_df.fit(df)
+        berteley.fit(df, embedding_model="specter", n_gram_type="bigram", verbose=True)
 
 
 def test_fit_attributes(test):
@@ -50,16 +51,15 @@ def test_fit_attributes(test):
     assert isinstance(test["metrics"]["Diversity"], float)
 
 
-def test_figures(test):
-    path = "../"
+def test_figures(test, tmp_path):
     # os.remove(path + "barchart.html")
     # os.remove(path + "barchart.png")
     #test["topic_model"].visualize_barchart(path=tmp_path)
     berteley.create_barcharts(test["topics"], test["topic_model"], path = str(tmp_path) + "/")
     # self.assertTrue(os.path.exists(path + "barchart.html"))
     # self.assertTrue(os.path.exists(path + "barchart.png"))
-    assert os.path.exists(path + "barchart.html")
-    assert os.path.exists(path + "barchart.png")
+    assert os.path.exists(str(tmp_path) + "/" + "barchart.html")
+    assert os.path.exists(str(tmp_path) + "/" + "barchart.png")
     with pytest.raises(TypeError):
         test["topic_model"].visualize_barchart(123)
 
