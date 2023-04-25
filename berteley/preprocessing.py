@@ -10,12 +10,17 @@ import contractions
 from joblib import delayed, Parallel
 import csv
 from pathlib import Path
+import subprocess
 
 from typing import List
 
 nltk.download('stopwords')
+try:
+    nlp = spacy.load('en_core_web_lg')
+except OSError:
+    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_lg"])
+    nlp = spacy.load('en_core_web_lg')
 
-nlp = spacy.load('en_core_web_lg')
 here = Path(__file__).parent
 file = open(here / "berteley_stopwords.csv", "r")
 
