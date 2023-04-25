@@ -1,6 +1,6 @@
 import pytest
 import os
-from berteley.berteley import BERTeley
+from berteley import berteley
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sklearn.datasets import fetch_20newsgroups
@@ -9,16 +9,17 @@ import numpy as np
 # gets rid of extraneous warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+
 @pytest.fixture
 def data():
-    return fetch_20newsgroups(subset='all',  remove=('headers', 'footers', 'quotes'))['data'][:100]
+    return fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))['data'][:100]
+
 
 @pytest.fixture
 def test(data):
-    model = SentenceTransformer('allenai-specter')
-    test = BERTeley(embedding_model=model, n_gram_type="bigram")
-    test.fit(data)
-    return test
+    model = "specter"
+    topics, probabilities, metrics, topic_sizes, topic_model = berteley.fit(data, embedding_model=model, n_gram_type="bigram", verbose=True)
+    return {"topics": topics, "probs": probabilities,"metrics": metrics, "topic_sizes": topic_sizes, "topic_model": topic_model}
 
 
 def test_berteley_init():
@@ -45,21 +46,22 @@ def test_fit_input_type(data):
 
 
 def test_fit_attributes(test):
-    assert isinstance(test.topic_sizes, dict)
-    assert isinstance(test.coherence, np.float64)
-    assert isinstance(test.diversity, float)
+    assert isinstance(test["topic_sizes"], dict)
+    assert isinstance(test["metrics"]["Coherence"], np.float64)
+    assert isinstance(test["metrics"]["Diversity"], float)
 
 
 def test_figures(test):
     path = "../"
     # os.remove(path + "barchart.html")
     # os.remove(path + "barchart.png")
-    test.create_barcharts(path=path)
+    #test["topic_model"].visualize_barchart(path=tmp_path)
+    berteley.create_barcharts(test["topics"], test["topic_model"], path = str(tmp_path) + "/")
     # self.assertTrue(os.path.exists(path + "barchart.html"))
     # self.assertTrue(os.path.exists(path + "barchart.png"))
     assert os.path.exists(path + "barchart.html")
     assert os.path.exists(path + "barchart.png")
     with pytest.raises(TypeError):
-        test.create_barcharts(123)
+        test["topic_model"].visualize_barchart(123)
 
     # self.assertRaises(TypeError, test.create_barcharts, 123)
