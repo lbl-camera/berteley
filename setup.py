@@ -28,7 +28,7 @@ with open(path.join(here, 'requirements-docs.txt')) as requirements_file:
 
 setup(
     author="Eric Chagnon",
-    author_email='eric.chagnon15@gmail.com',
+    author_email='echagnon@lbl.gov',
     python_requires='>=3.8',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -36,7 +36,7 @@ setup(
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: BSD License',
     ],
-    description="Topic modeling for scientific articles using BERTopic",
+    description="Topic modeling for scientific articles",
     entry_points={
         'console_scripts': [
             #'berteley=berteley:some_function',
@@ -51,7 +51,7 @@ setup(
     name='berteley',
     packages=find_packages(include=['berteley', 'berteley.*']),
     test_suite='tests',
-    url='https://github.com/ericchagnon15/berteley',
+    url='https://github.com/lbl-camera/berteley',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     zip_safe=False,

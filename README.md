@@ -7,7 +7,7 @@
 [![Documentation Status](https://readthedocs.org/projects/berteley/badge/?version=latest)](https://berteley.readthedocs.io/en/latest/?badge=latest)
 [![Test Coverage](https://codecov.io/gh/lbl-camera/berteley/branch/main/graph/badge.svg?token=TTuxfR7buK)](https://codecov.io/gh/lbl-camera/berteley)
 
-Topic modeling for scientific articles using BERTopic
+Topic modeling for scientific articles
 
 * License: BSD license
 * Documentation: https://berteley.readthedocs.io.
@@ -22,7 +22,7 @@ pip install berteley
 # code snippet showing very basic usage
 ```
 
-Topic Modeling with BERTopic  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1FieRA9fLdkQEGDIMYl0I3MCjSUKVF8C-?usp=sharing)
+Topic Modeling Colab Notebook: TBD 
 
 ## Features
 
