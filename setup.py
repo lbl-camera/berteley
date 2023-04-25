@@ -27,8 +27,8 @@ with open(path.join(here, 'requirements-docs.txt')) as requirements_file:
                     if not line.startswith('#')]
 
 setup(
-    author="Eric Chagnon",
-    author_email='eric.chagnon15@gmail.com',
+    author=["Eric Chagnon", "Ron Pandolfi", "Dani Ushizima"]
+    author_email=['eric.chagnon15@gmail.com','ronpandolfi@lbl.gov','dushizima@lbl.gov']
     python_requires='>=3.8',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
