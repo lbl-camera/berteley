@@ -23,7 +23,6 @@ def test(data):
 
 
 def test_berteley_init():
-    # this works it just takes a very long time
     # modelPath = "../bert-base-nli-mean-tokens"
     with pytest.raises(AttributeError):
         BERTeley(embedding_model="default")
