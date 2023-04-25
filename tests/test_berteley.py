@@ -1,65 +1,66 @@
 import pytest
 import os
-from berteley.berteley import BERTeley
+from berteley import berteley
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
 
+from berteley.berteley import initialize_model
+
 # gets rid of extraneous warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+
 @pytest.fixture
 def data():
-    return fetch_20newsgroups(subset='all',  remove=('headers', 'footers', 'quotes'))['data'][:100]
+    return fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))['data'][:100]
+
 
 @pytest.fixture
 def test(data):
-    model = SentenceTransformer('allenai-specter')
-    test = BERTeley(embedding_model=model, n_gram_type="bigram")
-    test.fit(data)
-    return test
+    model = "specter"
+    topics, probabilities, metrics, topic_sizes, topic_model = berteley.fit(data, embedding_model=model, n_gram_type="bigram", verbose=True)
+    return {"topics": topics, "probs": probabilities,"metrics": metrics, "topic_sizes": topic_sizes, "topic_model": topic_model}
 
 
 def test_berteley_init():
-    # this works it just takes a very long time
     # modelPath = "../bert-base-nli-mean-tokens"
     with pytest.raises(AttributeError):
-        BERTeley(embedding_model="default")
+        initialize_model(embedding_model="default")
 
     with pytest.raises(TypeError):
-        BERTeley(nr_topics='2')
+        initialize_model(nr_topics='2')
 
     with pytest.raises(TypeError):
-        BERTeley(n_gram_type=2)
+        initialize_model(n_gram_type=2)
 
     with pytest.raises(AttributeError):
-        BERTeley(n_gram_type='2')
+        initialize_model(n_gram_type='2')
 
 
 def test_fit_input_type(data):
-    df = pd.DataFrame(data, columns=['Documents'])
-    test_df = BERTeley()
+    df = {"data": data}
     with pytest.raises(TypeError):
-        test_df.fit(df)
+        berteley.fit(df, embedding_model="specter", n_gram_type="bigram", verbose=True)
 
 
 def test_fit_attributes(test):
-    assert isinstance(test.topic_sizes, dict)
-    assert isinstance(test.coherence, np.float64)
-    assert isinstance(test.diversity, float)
+    assert isinstance(test["topic_sizes"], dict)
+    assert isinstance(test["metrics"]["Coherence"], np.float64)
+    assert isinstance(test["metrics"]["Diversity"], float)
 
 
-def test_figures(test):
-    path = "../"
+def test_figures(test, tmp_path):
     # os.remove(path + "barchart.html")
     # os.remove(path + "barchart.png")
-    test.create_barcharts(path=path)
+    #test["topic_model"].visualize_barchart(path=tmp_path)
+    berteley.create_barcharts(test["topics"], test["topic_model"], path = str(tmp_path) + "/")
     # self.assertTrue(os.path.exists(path + "barchart.html"))
     # self.assertTrue(os.path.exists(path + "barchart.png"))
-    assert os.path.exists(path + "barchart.html")
-    assert os.path.exists(path + "barchart.png")
+    assert os.path.exists(str(tmp_path) + "/" + "barchart.html")
+    assert os.path.exists(str(tmp_path) + "/" + "barchart.png")
     with pytest.raises(TypeError):
-        test.create_barcharts(123)
+        test["topic_model"].visualize_barchart(123)
 
     # self.assertRaises(TypeError, test.create_barcharts, 123)

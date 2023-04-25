@@ -1,6 +1,6 @@
 # BERTeley
 
 ```{eval-rst}
-.. autoclass:: berteley.berteley.BERTeley
+.. automodule:: berteley.berteley
     :members:
 ```
