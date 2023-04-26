@@ -36,7 +36,7 @@ setup(
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: BSD License',
     ],
-    description="Topic modeling for scientific articles using BERTopic",
+    description="Topic modeling for scientific articles",
     entry_points={
         'console_scripts': [
             # 'berteley=berteley:some_function',
@@ -51,7 +51,7 @@ setup(
     name='berteley',
     packages=find_packages(include=['berteley', 'berteley.*']),
     test_suite='tests',
-    url='https://github.com/ericchagnon15/berteley',
+    url='https://github.com/lbl-camera/berteley',
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     zip_safe=False,
