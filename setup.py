@@ -19,16 +19,16 @@ with open(path.join(here, 'requirements.txt')) as requirements_file:
 with open(path.join(here, 'requirements-dev.txt')) as requirements_file:
     # Parse requirements.txt, ignoring any commented-out lines.
     dev = [line for line in requirements_file.read().splitlines()
-                    if not line.startswith('#')]
+           if not line.startswith('#')]
 
 with open(path.join(here, 'requirements-docs.txt')) as requirements_file:
     # Parse requirements.txt, ignoring any commented-out lines.
     docs = [line for line in requirements_file.read().splitlines()
-                    if not line.startswith('#')]
+            if not line.startswith('#')]
 
 setup(
-    author=["Eric Chagnon", "Ron Pandolfi", "Dani Ushizima"]
-    author_email=['eric.chagnon15@gmail.com','ronpandolfi@lbl.gov','dushizima@lbl.gov']
+    author="Eric Chagnon, Ron Pandolfi, Dani Ushizima",
+    author_email='echagnon@lbl.gov, ronpandolfi@lbl.gov, dushizima@lbl.gov',
     python_requires='>=3.8',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -39,7 +39,7 @@ setup(
     description="Topic modeling for scientific articles using BERTopic",
     entry_points={
         'console_scripts': [
-            #'berteley=berteley:some_function',
+            # 'berteley=berteley:some_function',
         ],
     },
     install_requires=requirements,
@@ -59,5 +59,5 @@ setup(
         'tests': dev,
         'docs': docs
     },
-    setup_requires = ["wheel"]
+    setup_requires=["wheel"]
 )
