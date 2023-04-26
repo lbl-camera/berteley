@@ -29,7 +29,7 @@ with open(path.join(here, 'requirements-docs.txt')) as requirements_file:
 setup(
     author="Eric Chagnon, Ron Pandolfi, Dani Ushizima",
     author_email='echagnon@lbl.gov, ronpandolfi@lbl.gov, dushizima@lbl.gov',
-    python_requires='>=3.8',
+    python_requires='>=3.8, <3.11',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Natural Language :: English',
