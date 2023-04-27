@@ -1,5 +1,7 @@
+import contextlib
 import re
 import string
+from functools import partial
 import spacy
 import numpy as np
 from nltk.tokenize import word_tokenize
@@ -7,10 +9,11 @@ import nltk
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
 import contractions
-from joblib import delayed, Parallel
+from joblib import delayed, Parallel, parallel
 import csv
 from pathlib import Path
 import subprocess
+from alive_progress import alive_it, alive_bar
 
 from typing import List
 
@@ -195,7 +198,15 @@ def expand_contractions(doc: str):
     return contractions.fix(doc)
 
 
-def preprocess(docs: List[str], allow_abbrev: bool = True):
+def _identity(doc):
+    return doc
+
+
+def _map_docs(docs, func, filter=lambda doc: True):
+    return [func(doc) for doc in docs if filter(doc)]
+
+
+def preprocess(docs: List[str], allow_abbrev: bool = True, show_progress:bool=False) -> List[str]:
     """
     Wrapper function for all the preprocessing steps
 
@@ -205,50 +216,58 @@ def preprocess(docs: List[str], allow_abbrev: bool = True):
         A list of all the documents
     allow_abbrev
         Boolean indicating whether abbreviations should be allowed. If set to false all strings with length 2 or less will be removed
+    show_progress
+        If True, shows a progress bar for completion status
 
     Returns
     -------
     A list of strings that have been preprocessed
     """
 
-    # remove all empty strings
-    docs = list(filter(len, docs))
+    cleaned_docs = docs.copy()
 
-    # remove all html tags
-    cleaned_docs = [remove_html(s) for s in docs]
+    steps = [('Removing empty strings...', _identity, len),
+             ('Removing all html tags...', remove_html),
+             ('Expanding contractions...', expand_contractions), # don't -> do not
+             ('Converting to lower case...', str.lower),
+             ('Removing all punctuation...', remove_punctuation), # make sure hyphenated words are properly combined and grammatical hyphens are spaced appropriately
+             ('Removing extra whitespace...', remove_extraspace),
+             ('Removing empty strings...', _identity, len),
+             ('Lemmatizing...', lemmatize),
+             ('Removing stopwords...', partial(remove_stopwords, allow_abbrev=allow_abbrev)),
+             ('Removing short strings', _identity, lambda doc: len(doc.split()) > 10)
+             ]
 
-    # remove/change numbers
-
-    # expand contractions (don't -> do not)
-    cleaned_docs = [expand_contractions(s) for s in cleaned_docs]
-
-    # lower case
-    cleaned_docs = [s.lower() for s in cleaned_docs]
-
-    # remove all punctuation (make sure hyphenated words are properly combined
-    # and grammatical hyphens are spaced appropriately)
-    cleaned_docs = [remove_punctuation(s) for s in cleaned_docs]
-
-    # remove excess white space
-
-    cleaned_docs = [remove_extraspace(s) for s in cleaned_docs]
-
-    # remove empty strings again
-    cleaned_docs = list(filter(len, cleaned_docs))
-
-    # lemmatize
-    cleaned_docs = [lemmatize(s) for s in cleaned_docs]
-
-    # remove stopwords
-    cleaned_docs = [remove_stopwords(s, allow_abbrev=allow_abbrev) for s in cleaned_docs]
-
-    # remove strings with small length
-    cleaned_docs = [s for s in cleaned_docs if len(s.split()) > 10]
+    iterator = alive_it if show_progress else iter
+    bar = iterator(steps)
+    for title, func, *filter in bar:
+        if show_progress:
+            bar.title(title)
+        cleaned_docs = _map_docs(cleaned_docs, func, **{'filter': filter[0]} if filter else {})
 
     return cleaned_docs
 
 
-def preprocess_parallel(docs: List[str], n_workers: int = 4, allow_abbrev: bool = True):
+@contextlib.contextmanager
+def alive_bar_joblib(bar):
+    """Context manager to patch joblib to report into progress bar given as argument"""
+    class AliveBatchCompletionCallback(parallel.BatchCompletionCallBack):
+        def __call__(self, *args, **kwargs):
+            if bar:
+                for i in range(self.batch_size):
+                    bar()
+            return super().__call__(*args, **kwargs)
+
+    old_batch_callback = parallel.BatchCompletionCallBack
+    parallel.BatchCompletionCallBack = AliveBatchCompletionCallback
+    try:
+        yield bar
+    finally:
+        parallel.BatchCompletionCallBack = old_batch_callback
+        # bar.close()
+
+
+def preprocess_parallel(docs: List[str], n_workers: int = 4, allow_abbrev: bool = True, show_progress: bool=True) -> List[str]:
     """
     Parallelizes the preprocessing by splitting the documents evenly amongst the n_workers
 
@@ -263,6 +282,8 @@ def preprocess_parallel(docs: List[str], n_workers: int = 4, allow_abbrev: bool 
         Boolean indicating whether abbreviations should be allowed. If set to false all strings with length
         2 or less will be removed
 
+    show_progress: bool
+        If True, shows a progress bar for completion status
 
     Returns
     -------
@@ -273,12 +294,15 @@ def preprocess_parallel(docs: List[str], n_workers: int = 4, allow_abbrev: bool 
     docs = list(filter(len, docs))
 
     # split the docs equally among the workers
-    partitions = np.array_split(docs, n_workers)
+    partitions = np.array_split(docs, min(len(docs), 100))
 
     # docs must be a list of strings
     partitions = [list(p) for p in partitions]
 
-    clean_docs = Parallel(n_jobs=n_workers)(delayed(preprocess)(p, allow_abbrev) for p in partitions)
+    with alive_bar(len(docs)) if show_progress else None as bar:
+        with alive_bar_joblib(bar):
+            clean_docs = Parallel(n_jobs=n_workers)(delayed(preprocess)([doc], allow_abbrev, show_progress=False)
+                                                for doc in docs)
     # flatten the list of lists into a single list
     clean_docs = [item for sublist in clean_docs for item in sublist]
 
