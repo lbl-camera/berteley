@@ -253,7 +253,7 @@ def alive_bar_joblib(bar):
     """Context manager to patch joblib to report into progress bar given as argument"""
     class AliveBatchCompletionCallback(parallel.BatchCompletionCallBack):
         def __call__(self, *args, **kwargs):
-            if bar:
+            if bar and not isinstance(bar, contextlib.nullcontext):
                 for i in range(self.batch_size):
                     bar()
             return super().__call__(*args, **kwargs)
@@ -264,7 +264,6 @@ def alive_bar_joblib(bar):
         yield bar
     finally:
         parallel.BatchCompletionCallBack = old_batch_callback
-        # bar.close()
 
 
 def preprocess_parallel(docs: List[str], n_workers: int = 4, allow_abbrev: bool = True, show_progress: bool=True) -> List[str]:
@@ -293,13 +292,7 @@ def preprocess_parallel(docs: List[str], n_workers: int = 4, allow_abbrev: bool 
     # remove all empty strings
     docs = list(filter(len, docs))
 
-    # split the docs equally among the workers
-    partitions = np.array_split(docs, min(len(docs), 100))
-
-    # docs must be a list of strings
-    partitions = [list(p) for p in partitions]
-
-    with alive_bar(len(docs)) if show_progress else None as bar:
+    with alive_bar(len(docs)) if show_progress else contextlib.nullcontext() as bar:
         with alive_bar_joblib(bar):
             clean_docs = Parallel(n_jobs=n_workers)(delayed(preprocess)([doc], allow_abbrev, show_progress=False)
                                                 for doc in docs)
