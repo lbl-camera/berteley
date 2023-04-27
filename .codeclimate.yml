@@ -1,0 +1,5 @@
+exclude_patterns:
+- "tests/"
+- "versioneer.py"
+- "**/_version.py"
+- "docs/**/*.py"
