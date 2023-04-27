@@ -20,8 +20,8 @@ def data():
 @pytest.fixture
 def test(data):
     model = "specter"
-    topics, probabilities, metrics, topic_sizes, topic_model = berteley.fit(data, embedding_model=model, n_gram_type="bigram", verbose=True)
-    return {"topics": topics, "probs": probabilities,"metrics": metrics, "topic_sizes": topic_sizes, "topic_model": topic_model}
+    topics, probabilities, metrics, topic_sizes, topic_model, topic_words = berteley.fit(data, embedding_model=model, n_gram_type="bigram", verbose=True)
+    return {"topics": topics, "probs": probabilities,"metrics": metrics, "topic_sizes": topic_sizes, "topic_model": topic_model, "topic_words": topic_words}
 
 
 def test_berteley_init():
@@ -49,6 +49,7 @@ def test_fit_attributes(test):
     assert isinstance(test["topic_sizes"], dict)
     assert isinstance(test["metrics"]["Coherence"], np.float64)
     assert isinstance(test["metrics"]["Diversity"], float)
+    assert isinstance(test["topic_words"], dict)
 
 
 def test_figures(test, tmp_path):

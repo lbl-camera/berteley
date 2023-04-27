@@ -122,8 +122,9 @@ def fit(data: List[str],
     topics, probabilities = topic_model.fit_transform(data)
     metrics = _calculate_metrics(data, topic_model, topics, n_gram_range)
     topic_sizes = _calculate_topic_sizes(topics)
+    topic_words = topic_model.topic_representations_
 
-    return topics, probabilities, metrics, topic_sizes, topic_model
+    return topics, probabilities, metrics, topic_sizes, topic_model, topic_words
 
 
 def _calculate_topic_sizes(topics: List[int]):
