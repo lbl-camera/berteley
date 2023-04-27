@@ -11,3 +11,4 @@ joblib
 kaleido
 beautifulsoup4
 contractions
+alive_progress
