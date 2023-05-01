@@ -1,6 +1,6 @@
-# BERTeley
+# BERTeley Models
 
 ```{eval-rst}
-.. automodule:: berteley.berteley
+.. automodule:: berteley.models
     :members:
 ```
