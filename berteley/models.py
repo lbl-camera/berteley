@@ -39,7 +39,7 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
         Returns
         -------
         The function sets attributes for topics, probabilities, and metrics.
-            """
+        """
 
     if not isinstance(nr_topics, int) and nr_topics is not None:
         raise TypeError("nr_topics must be an int")
