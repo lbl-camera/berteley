@@ -19,10 +19,8 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
                      n_gram_type: str = "unigram",
                      verbose="False"):
     """
-        Fits a BERTopic model on the data. After fitting the topic assigned to each document is stored
-        in the 'topics' attribute, the coherence and diversity measures are stored in the
-        'coherence' and 'diversity' attributes respectively, and the amount of documents assigned to each topic
-        are stored in the 'topic_sizes' attribute.
+        Conducts type checks on the input variables and converts certain parameters to the proper types dependent on their input.
+        Not intended to be called by the user, but instead used internally by the fit function.
 
 
         Parameters
@@ -38,7 +36,10 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
 
         Returns
         -------
-        The function sets attributes for topics, probabilities, and metrics.
+        embedding_model
+                SentenceTransformer language model
+        n_gram_range
+                tuple indicating the level of n_gram
             """
 
     if not isinstance(nr_topics, int) and nr_topics is not None:
@@ -106,8 +107,19 @@ def fit(data: List[str],
 
         Returns
         -------
-        The function sets attributes for topics, probabilities, and metrics.
-            """
+        topics
+                a list of integers representing the topic the corresponding document was assigned to
+        probabilities
+                a
+        metrics
+                a dictionary of the 2 metrics with keys "Coherence" and "Diversity"
+        topic_sizes
+                a dictionary with key: topic number and the value: the number of documents assigned the said topic
+        topic_model
+                the fitted BERTopic model
+        topic_words
+                a dictionary with key: the topic number and the value: a list of strings
+        """
 
     if not isinstance(embedding_model, SentenceTransformer) and not isinstance(n_gram_type, tuple):
         embedding_model, n_gram_range = initialize_model(embedding_model, nr_topics, n_gram_type, verbose)
@@ -255,6 +267,10 @@ def create_barcharts(topics, topic_model: BERTopic, path=""):
 
     Parameters
     ----------
+    topics
+            the list of topic assignments output from the fit function
+    topic_model
+            fitted BERTopic model output from the fit function
     path
         A string containing the desired path to save the barchart
 
