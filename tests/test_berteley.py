@@ -1,12 +1,9 @@
 import pytest
 import os
-from berteley import berteley
-import pandas as pd
-from sentence_transformers import SentenceTransformer
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
 
-from berteley.berteley import initialize_model
+from berteley.models import initialize_model, fit, create_barcharts
 
 # gets rid of extraneous warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -20,8 +17,8 @@ def data():
 @pytest.fixture
 def test(data):
     model = "specter"
-    topics, probabilities, metrics, topic_sizes, topic_model, topic_words = berteley.fit(data, embedding_model=model, n_gram_type="bigram", verbose=True)
-    return {"topics": topics, "probs": probabilities,"metrics": metrics, "topic_sizes": topic_sizes, "topic_model": topic_model, "topic_words": topic_words}
+    topics, probabilities, metrics, topic_sizes, topic_model = fit(data, embedding_model=model, n_gram_type="bigram", verbose=True)
+    return {"topics": topics, "probs": probabilities,"metrics": metrics, "topic_sizes": topic_sizes, "topic_model": topic_model}
 
 
 def test_berteley_init():
@@ -42,21 +39,20 @@ def test_berteley_init():
 def test_fit_input_type(data):
     df = {"data": data}
     with pytest.raises(TypeError):
-        berteley.fit(df, embedding_model="specter", n_gram_type="bigram", verbose=True)
+        fit(df, embedding_model="specter", n_gram_type="bigram", verbose=True)
 
 
 def test_fit_attributes(test):
     assert isinstance(test["topic_sizes"], dict)
     assert isinstance(test["metrics"]["Coherence"], np.float64)
     assert isinstance(test["metrics"]["Diversity"], float)
-    assert isinstance(test["topic_words"], dict)
 
 
 def test_figures(test, tmp_path):
     # os.remove(path + "barchart.html")
     # os.remove(path + "barchart.png")
     #test["topic_model"].visualize_barchart(path=tmp_path)
-    berteley.create_barcharts(test["topics"], test["topic_model"], path = str(tmp_path) + "/")
+    create_barcharts(test["topics"], test["topic_model"], path = str(tmp_path) + "/")
     # self.assertTrue(os.path.exists(path + "barchart.html"))
     # self.assertTrue(os.path.exists(path + "barchart.png"))
     assert os.path.exists(str(tmp_path) + "/" + "barchart.html")
