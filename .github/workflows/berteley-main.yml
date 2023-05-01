@@ -1,0 +1,86 @@
+name: BERTeley CI
+
+# triggers on push
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ '3.8', '3.9' ]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -e .[tests]
+
+      - name: Run tests
+        run: pytest tests --cov=./ --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage/reports/
+          env_vars: OS, PYTHON
+          fail_ci_if_error: true
+          files: ./coverage.xml
+          name: codecov-umbrella
+          path_to_write_report: ./coverage/codecov_report.txt
+          verbose: true
+
+  # Determine if this run is triggered by a push to main WITH a tagged commit
+  on-tag-check:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      on_tag: ${{ steps.contains_tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      # Determine what tag is associated with this push's HEAD
+      - name: Find Tag
+        id: tagger
+        uses: jimschubert/query-tag-action@v1
+  deploy:
+    needs: on-tag-check
+    # Only run deploy if tag does not contain a '-' (meaning no additional commits since last tag)
+    if: ${{ !contains(needs.on-tag-check.outputs.on_tag, '-' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Setup deploy
+        run: |
+          pip install --upgrade setuptools wheel twine
+          python setup.py sdist bdist_wheel
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          verbose: true
+
+      - name: Github Release
+        uses: fnkr/github-action-ghr@v1
+        env:
+          GHR_COMPRESS: xz
+          GHR_PATH: build/
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
