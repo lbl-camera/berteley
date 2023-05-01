@@ -30,6 +30,7 @@ file = open(here / "berteley_stopwords.csv", "r")
 data = list(csv.reader(file, delimiter=","))
 
 STOPWORDS = [x[0] for x in data]
+NLTK_STOPWORDS = set(stopwords.words('english'))
 
 
 def combine_hyphens(doc: str):
@@ -131,7 +132,7 @@ def remove_stopwords(doc: str, allow_abbrev: bool = True):
 
     for word in word_tokenize(doc):
         contains_letter = re.search('[a-zA-Z]', word) is not None
-        stopword_check = word.lower() not in stopwords.words('english')
+        stopword_check = word.lower() not in NLTK_STOPWORDS
         berteley_stopword_check = word.lower() not in STOPWORDS
 
         if contains_letter and stopword_check and berteley_stopword_check:
