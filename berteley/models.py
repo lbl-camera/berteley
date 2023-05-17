@@ -184,7 +184,7 @@ def _calculate_metrics(texts: List[str], topic_model: BERTopic, topics: List[int
     # octis requires the texts input be in the form of a list of list of strings
     octis_texts = [sentence.split() for sentence in texts]
 
-    npmi = Coherence(texts=octis_texts, topk=10, measure='c_npmi')
+    npmi = Coherence(texts=octis_texts, topk=10, measure='c_v')
     topic_diversity = TopicDiversity(topk=10)
 
     # reformat the output of BERTopic to the proper format
@@ -257,7 +257,7 @@ def _calculate_coherence(topic_model: BERTopic, docs: List[str], topics):
                                      texts=tokens,
                                      corpus=corpus,
                                      dictionary=dictionary,
-                                     coherence='c_npmi')
+                                     coherence='c_v')
     coherence = coherence_model.get_coherence()
     return coherence
 
