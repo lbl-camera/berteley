@@ -130,7 +130,8 @@ def fit(data: List[str],
 
     topic_model = BERTopic(embedding_model=embedding_model,
                            nr_topics=nr_topics,
-                           verbose=verbose, **opts)
+                           verbose=verbose, 
+                           **opts)
     topics, probabilities = topic_model.fit_transform(data)
     metrics = _calculate_metrics(data, topic_model, topics, n_gram_range)
     topic_sizes = _calculate_topic_sizes(topics)
