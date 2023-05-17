@@ -120,19 +120,20 @@ def fit(data: List[str],
         topic_words
                 a dictionary with key: the topic number and the value: a list of strings
         """
-
+    opts = dict()
+    
     if not isinstance(embedding_model, SentenceTransformer) and not isinstance(n_gram_type, tuple):
-        embedding_model, n_gram_range = initialize_model(embedding_model, nr_topics, n_gram_type, verbose)
+        embedding_model, opts['n_gram_range'] = initialize_model(embedding_model, nr_topics, n_gram_type, verbose)
 
     if not isinstance(data, list) or (isinstance(data, list) and not isinstance(data[0], str)):
         raise TypeError("Data must be a list of strings")
 
     topic_model = BERTopic(embedding_model=embedding_model,
                            nr_topics=nr_topics,
-                           n_gram_range=n_gram_range,
-                           verbose=verbose)
+                           verbose=verbose, 
+                           **opts)
     topics, probabilities = topic_model.fit_transform(data)
-    metrics = _calculate_metrics(data, topic_model, topics, n_gram_range)
+    metrics = _calculate_metrics(data, topic_model, topics, **opts)
     topic_sizes = _calculate_topic_sizes(topics)
     topic_words = topic_model.topic_representations_
 
