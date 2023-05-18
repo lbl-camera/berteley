@@ -2,7 +2,6 @@ import pytest
 import os
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from berteley.models import initialize_model, fit, create_barcharts
 
@@ -50,6 +49,13 @@ def test_fit_attributes(test):
     assert isinstance(test["metrics"]["Coherence"], np.float64)
     assert isinstance(test["metrics"]["Diversity"], float)
     assert isinstance(test["topic_words"], dict)
+
+
+def test_bigram(data):
+    topics, probabilities, metrics, topic_sizes, topic_model, topic_words = fit(data,
+                                                                                embedding_model="specter",
+                                                                                n_gram_type="bigram",
+                                                                                verbose=True)
 
 
 def test_figures(test, tmp_path):
