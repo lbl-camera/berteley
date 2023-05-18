@@ -44,17 +44,20 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
 
     if not isinstance(nr_topics, int) and nr_topics is not None:
         raise TypeError("nr_topics must be an int")
-    if not isinstance(n_gram_type, str) and n_gram_type is not None:
-        raise TypeError("n_gram_type must be an string")
+    if not isinstance(n_gram_type, str) and n_gram_type is not None and not isinstance(n_gram_type, tuple):
+        raise TypeError("n_gram_type must be a string or tuple")
     if not isinstance(verbose, bool) and nr_topics is not None:
         raise TypeError("verbose must be a bool")
 
-    if n_gram_type == "unigram":
-        n_gram_range = (1, 1)
-    elif n_gram_type == "bigram":
-        n_gram_range = (2, 2)
+    if isinstance(n_gram_type, str):
+        if n_gram_type == "unigram":
+            n_gram_range = (1, 1)
+        elif n_gram_type == "bigram":
+            n_gram_range = (2, 2)
+        else:
+            raise AttributeError("n_gram_type must equal \"unigram\" or \"bigram\" ")
     else:
-        raise AttributeError("n_gram_type must equal \"unigram\" or \"bigram\" ")
+        n_gram_range = n_gram_type
 
     if isinstance(embedding_model, str):
         if embedding_model.lower() == "specter":
@@ -122,7 +125,7 @@ def fit(data: List[str],
         """
     opts = dict()
     
-    if not isinstance(embedding_model, SentenceTransformer) and not isinstance(n_gram_type, tuple):
+    if not isinstance(embedding_model, SentenceTransformer):
         embedding_model, opts['n_gram_range'] = initialize_model(embedding_model, nr_topics, n_gram_type, verbose)
 
     if not isinstance(data, list) or (isinstance(data, list) and not isinstance(data[0], str)):

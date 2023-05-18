@@ -2,6 +2,7 @@ import pytest
 import os
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
+from sentence_transformers import SentenceTransformer
 
 from berteley.models import initialize_model, fit, create_barcharts
 
@@ -17,23 +18,25 @@ def data():
 @pytest.fixture
 def test(data):
     model = "specter"
-    topics, probabilities, metrics, topic_sizes, topic_model, topic_words = fit(data, embedding_model=model, n_gram_type="bigram", verbose=True)
+    topics, probabilities, metrics, topic_sizes, topic_model, topic_words = fit(data, embedding_model=model, n_gram_type=(1,1), verbose=True)
     return {"topics": topics, "probs": probabilities,"metrics": metrics, "topic_sizes": topic_sizes, "topic_model": topic_model, "topic_words": topic_words}
 
 
 def test_berteley_init():
     # modelPath = "../bert-base-nli-mean-tokens"
     with pytest.raises(AttributeError):
-        initialize_model(embedding_model="default")
-
+        initialize_model(embedding_model="my_model")
     with pytest.raises(TypeError):
         initialize_model(nr_topics='2')
-
     with pytest.raises(TypeError):
         initialize_model(n_gram_type=2)
-
     with pytest.raises(AttributeError):
         initialize_model(n_gram_type='2')
+
+    initialize_model(embedding_model="specter", n_gram_type="unigram")
+    initialize_model(embedding_model="scibert", n_gram_type="bigram")
+    initialize_model(embedding_model="aspire", n_gram_type=(1,1))
+    initialize_model(embedding_model="aspire", n_gram_type=(2, 2))
 
 
 def test_fit_input_type(data):
