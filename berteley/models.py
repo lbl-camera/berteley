@@ -124,7 +124,7 @@ def fit(data: List[str],
                 a dictionary with key: the topic number and the value: a list of strings
         """
     opts = dict()
-    
+
     if not isinstance(embedding_model, SentenceTransformer) and not isinstance(n_gram_range, tuple):
         embedding_model, opts['n_gram_range'] = initialize_model(embedding_model, nr_topics, n_gram_range, verbose)
 
@@ -133,10 +133,10 @@ def fit(data: List[str],
 
     topic_model = BERTopic(embedding_model=embedding_model,
                            nr_topics=nr_topics,
-                           verbose=verbose, 
+                           verbose=verbose,
                            **opts)
     topics, probabilities = topic_model.fit_transform(data)
-    #metrics = _calculate_metrics(data, topic_model, topics, **opts)
+    # metrics = _calculate_metrics(data, topic_model, topics, **opts)
     topic_sizes = _calculate_topic_sizes(topics)
     topic_words = topic_model.topic_representations_
 
@@ -184,7 +184,6 @@ def calculate_metrics(texts: List[str], topic_model: BERTopic, topics: List[int]
         topic_words[k] = [x[0] for x in topic_dict[k]]
     word_list = list(topic_words.values())
     word_list.pop(0)
-
 
     topic_diversity = TopicDiversity(topk=10)
 
@@ -235,6 +234,7 @@ def _calculate_coherence(topic_model: BERTopic, docs: List[str], topics):
                                      texts=tokens,
                                      corpus=corpus,
                                      dictionary=dictionary,
+                                     processes=1,
                                      coherence='c_v')
     coherence = coherence_model.get_coherence()
     return coherence
@@ -273,4 +273,3 @@ def create_barcharts(topics, topic_model: BERTopic, path=""):
         fig.write_html(fig_name)
         fig.write_image(fig_name_png)
     return fig
-
