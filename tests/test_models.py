@@ -11,7 +11,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 @pytest.fixture
 def data():
-    return fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))['data'][:100]
+    return fetch_20newsgroups(subset='all', remove=('headers', 'footers', 'quotes'))['data'][:300]
 
 
 @pytest.fixture
