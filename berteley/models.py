@@ -44,17 +44,20 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
 
     if not isinstance(nr_topics, int) and nr_topics is not None:
         raise TypeError("nr_topics must be an int")
-    if not isinstance(n_gram_type, str) and n_gram_type is not None:
-        raise TypeError("n_gram_type must be an string")
     if not isinstance(verbose, bool) and nr_topics is not None:
         raise TypeError("verbose must be a bool")
 
-    if n_gram_type == "unigram":
-        n_gram_range = (1, 1)
-    elif n_gram_type == "bigram":
-        n_gram_range = (2, 2)
+    if isinstance(n_gram_range, str):
+        if n_gram_range == "unigram":
+            n_gram_range = (1, 1)
+        elif n_gram_range == "bigram":
+            n_gram_range = (2, 2)
+        else:
+            raise AttributeError("n_gram_type must equal \"unigram\" or \"bigram\" if it is a string")
+    elif isinstance(n_gram_range, tuple):
+        pass
     else:
-        raise AttributeError("n_gram_type must equal \"unigram\" or \"bigram\" ")
+        raise TypeError("n_gram_range must be an string or tuple")
 
     if isinstance(embedding_model, str):
         if embedding_model.lower() == "specter":
@@ -83,7 +86,7 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
 def fit(data: List[str],
         embedding_model: Union[SentenceTransformer,str] = "specter",
         nr_topics: int = None,
-        n_gram_type: str = "unigram",
+        n_gram_range: Union[Literal["unigram", "bigram"], Tuple[int, int]] = "unigram",
         verbose: bool = False):
     """
         Fits a BERTopic model on the data. After fitting the topic assigned to each document is stored
@@ -122,8 +125,8 @@ def fit(data: List[str],
         """
     opts = dict()
     
-    if not isinstance(embedding_model, SentenceTransformer) and not isinstance(n_gram_type, tuple):
-        embedding_model, opts['n_gram_range'] = initialize_model(embedding_model, nr_topics, n_gram_type, verbose)
+    if not isinstance(embedding_model, SentenceTransformer) and not isinstance(n_gram_range, tuple):
+        embedding_model, opts['n_gram_range'] = initialize_model(embedding_model, nr_topics, n_gram_range, verbose)
 
     if not isinstance(data, list) or (isinstance(data, list) and not isinstance(data[0], str)):
         raise TypeError("Data must be a list of strings")
@@ -133,11 +136,11 @@ def fit(data: List[str],
                            verbose=verbose, 
                            **opts)
     topics, probabilities = topic_model.fit_transform(data)
-    metrics = _calculate_metrics(data, topic_model, topics, **opts)
+    #metrics = _calculate_metrics(data, topic_model, topics, **opts)
     topic_sizes = _calculate_topic_sizes(topics)
     topic_words = topic_model.topic_representations_
 
-    return topics, probabilities, metrics, topic_sizes, topic_model, topic_words
+    return topics, probabilities, topic_sizes, topic_model, topic_words
 
 
 def _calculate_topic_sizes(topics: List[int]):
@@ -147,7 +150,8 @@ def _calculate_topic_sizes(topics: List[int]):
 
     Parameters
     ----------
-
+    topics
+        List of topic assignments for each document
 
     Returns
     -------
@@ -160,7 +164,7 @@ def _calculate_topic_sizes(topics: List[int]):
     return topic_sizes
 
 
-def _calculate_metrics(texts: List[str], topic_model: BERTopic, topics: List[int], n_gram_range: Tuple[int, int]):
+def calculate_metrics(texts: List[str], topic_model: BERTopic, topics: List[int], n_gram_range: Tuple[int, int] = None):
     """
     Calculates the Topic Coherence and Topic Diversity of the topic model.
     Parameters
@@ -181,37 +185,12 @@ def _calculate_metrics(texts: List[str], topic_model: BERTopic, topics: List[int
     word_list = list(topic_words.values())
     word_list.pop(0)
 
-    # octis requires the texts input be in the form of a list of list of strings
-    octis_texts = [sentence.split() for sentence in texts]
 
-    npmi = Coherence(texts=octis_texts, topk=10, measure='c_v')
     topic_diversity = TopicDiversity(topk=10)
 
-    # reformat the output of BERTopic to the proper format
-    # {topics: [[topic, words, for, topic1], [topic, words, for, topic2], [etc, etc, etc]]}
-    all_words = [word for words in octis_texts for word in words]
+    coherence_score = _calculate_coherence(topic_model, texts, topics)
 
-    # check if the model is bigram
-    if n_gram_range == (2, 2):
-        bertopic_topics = [
-            [
-                vals[0] if (vals[0].split()[0] in all_words or vals[0].split()[1] in all_words) else all_words[0]
-                for vals in topic_model.get_topic(i)[:10]
-            ]
-            for i in range(len(set(topics)) - 1)
-        ]
-
-        output_tm = {"topics": bertopic_topics}
-
-        coherence_score = _calculate_coherence(topic_model, texts, topics)
-
-    # unigram
-    else:
-
-        output_tm = {"topics": word_list}
-
-        coherence_score = npmi.score(output_tm)
-
+    output_tm = {"topics": word_list}
     diversity_score = topic_diversity.score(output_tm)
 
     return {"Coherence": coherence_score, "Diversity": diversity_score}
@@ -245,7 +224,6 @@ def _calculate_coherence(topic_model: BERTopic, docs: List[str], topics):
     analyzer = vectorizer.build_analyzer()
 
     # Extract features for Topic Coherence evaluation
-    words = vectorizer.get_feature_names()
     tokens = [analyzer(doc) for doc in cleaned_docs]
     dictionary = corpora.Dictionary(tokens)
     corpus = [dictionary.doc2bow(token) for token in tokens]
