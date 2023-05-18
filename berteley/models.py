@@ -7,7 +7,7 @@ from gensim.models.coherencemodel import CoherenceModel
 from octis.evaluation_metrics.coherence_metrics import Coherence
 from octis.evaluation_metrics.diversity_metrics import TopicDiversity
 from sentence_transformers import SentenceTransformer, models
-from typing import List, Dict, Tuple, Union
+from typing import List, Dict, Tuple, Union, Literal
 
 nltk.download('stopwords')
 
@@ -16,7 +16,7 @@ nltk.download('punkt')
 
 def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter",
                      nr_topics: int = None,
-                     n_gram_type: str = "unigram",
+                     n_gram_range: Union[Literal["unigram", "bigram"], Tuple[int, int]] = "unigram",
                      verbose="False"):
     """
         Conducts type checks on the input variables and converts certain parameters to the proper types dependent on their input.
@@ -27,10 +27,10 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
         ----------
         embedding_model
                 Either a SentenceTransformer, or a string with values "specter". "aspire", or "scibert".
-        nr_topics
+        nr_topics: int
                 The desired number of topics, if not specified the results will be determined by HDBSCAN's reduction step.
-        n_gram_type
-                String indicating whether the user would like unigram or bigram.
+        n_gram_range
+                String indicating whether the user would like unigram or bigram or tuple of ints.
         verbose
                 Boolean indicating verbose output.
 
@@ -84,7 +84,7 @@ def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter
 
 
 def fit(data: List[str],
-        embedding_model: Union[SentenceTransformer,str] = "specter",
+        embedding_model: Union[SentenceTransformer, str] = "specter",
         nr_topics: int = None,
         n_gram_range: Union[Literal["unigram", "bigram"], Tuple[int, int]] = "unigram",
         verbose: bool = False):
@@ -103,8 +103,8 @@ def fit(data: List[str],
                 Either a SentenceTransformer, or a string with values "specter". "aspire", or "scibert".
         nr_topics
                 The desired number of topics, if not specified the results will be determined by HDBSCAN's reduction step.
-        n_gram_type
-                String indicating whether the user would like unigram or bigram.
+        n_gram_range
+                String indicating whether the user would like unigram or bigram, or tuple of ints.
         verbose
                 Boolean indicating verbose output.
 
