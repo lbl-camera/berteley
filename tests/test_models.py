@@ -75,8 +75,8 @@ def test_figures(test, tmp_path):
     # os.remove(path + "barchart.png")
     # test["topic_model"].visualize_barchart(path=tmp_path)
     path = "tests"
-    create_barcharts(test["topics"], test["topic_model"], path=path + "/")
-    #create_barcharts(test["topics"], test["topic_model"], path=str(tmp_path) + "/")
+    #create_barcharts(test["topics"], test["topic_model"], path=path + "/")
+    create_barcharts(test["topics"], test["topic_model"], path=str(tmp_path) + "/")
     # self.assertTrue(os.path.exists(path + "barchart.html"))
     # self.assertTrue(os.path.exists(path + "barchart.png"))
     assert os.path.exists(str(tmp_path) + "/" + "barchart.html")
