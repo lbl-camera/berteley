@@ -3,7 +3,7 @@ import os
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
 
-from berteley.models import initialize_model, fit, create_barcharts, calculate_metrics
+from berteley.models import initialize_model, fit, create_barcharts, _calculate_metrics
 
 # gets rid of extraneous warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -17,7 +17,7 @@ def data():
 @pytest.fixture
 def test(data):
     model = "specter"
-    topics, probabilities, topic_sizes, topic_model, topic_words = fit(data, embedding_model=model,
+    topics, probabilities, topic_sizes, topic_model, topic_words, metrics = fit(data, embedding_model=model,
                                                                        n_gram_range="unigram", verbose=True)
     return {"topics": topics, "probs": probabilities, "topic_sizes": topic_sizes, "topic_model": topic_model,
             "topic_words": topic_words}
@@ -54,18 +54,18 @@ def test_fit_attributes(test, data):
 
     assert isinstance(test["topic_words"], dict)
 
-    metrics = calculate_metrics(data, test["topic_model"], test["topics"])
+    metrics = _calculate_metrics(data, test["topic_model"], test["topics"])
     assert isinstance(metrics["Coherence"], np.float64)
     assert isinstance(metrics["Diversity"], float)
 
 
 def test_bigram(data):
-    topics, probabilities, topic_sizes, topic_model, topic_words = fit(data,
+    topics, probabilities, topic_sizes, topic_model, topic_words, metrics = fit(data,
                                                                        embedding_model="specter",
-                                                                       n_gram_range="unigram",
+                                                                       n_gram_range="bigram",
                                                                        verbose=True)
 
-    metrics = calculate_metrics(data, topic_model, topics)
+    #metrics = calculate_metrics(data, topic_model, topics)
     assert isinstance(metrics["Coherence"], np.float64)
     assert isinstance(metrics["Diversity"], float)
 
@@ -74,6 +74,8 @@ def test_figures(test, tmp_path):
     # os.remove(path + "barchart.html")
     # os.remove(path + "barchart.png")
     # test["topic_model"].visualize_barchart(path=tmp_path)
+    path = "tests"
+    #create_barcharts(test["topics"], test["topic_model"], path=path + "/")
     create_barcharts(test["topics"], test["topic_model"], path=str(tmp_path) + "/")
     # self.assertTrue(os.path.exists(path + "barchart.html"))
     # self.assertTrue(os.path.exists(path + "barchart.png"))

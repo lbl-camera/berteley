@@ -136,11 +136,11 @@ def fit(data: List[str],
                            verbose=verbose,
                            **opts)
     topics, probabilities = topic_model.fit_transform(data)
-    # metrics = _calculate_metrics(data, topic_model, topics, **opts)
+    metrics = _calculate_metrics(data, topic_model, topics)
     topic_sizes = _calculate_topic_sizes(topics)
     topic_words = topic_model.topic_representations_
 
-    return topics, probabilities, topic_sizes, topic_model, topic_words
+    return topics, probabilities, topic_sizes, topic_model, topic_words, metrics
 
 
 def _calculate_topic_sizes(topics: List[int]):
@@ -164,13 +164,17 @@ def _calculate_topic_sizes(topics: List[int]):
     return topic_sizes
 
 
-def calculate_metrics(texts: List[str], topic_model: BERTopic, topics: List[int], n_gram_range: Tuple[int, int] = None):
+def _calculate_metrics(texts: List[str], topic_model: BERTopic, topics: List[int]):
     """
     Calculates the Topic Coherence and Topic Diversity of the topic model.
     Parameters
     ----------
     texts
          The list of documents
+    topic_model
+        Fitted topic model
+    topics
+        list of topic assignments
 
     Returns
     -------
