@@ -44,25 +44,14 @@ on a corpus consisting of scientific articles
 
 # Statement of need
 
-`Gala` is an Astropy-affiliated Python package for galactic dynamics. Python
-enables wrapping low-level languages (e.g., C) for speed without losing
-flexibility or ease-of-use in the user-interface. The API for `Gala` was
-designed to provide a class-based and user-friendly interface to fast (C or
-Cython-optimized) implementations of common operations such as gravitational
-potential and force evaluation, orbit integration, dynamical transformations,
-and chaos indicators for nonlinear dynamics. `Gala` also relies heavily on and
-interfaces well with the implementations of physical units and astronomical
-coordinate systems in the `Astropy` package [@astropy] (`astropy.units` and
-`astropy.coordinates`).
+`BERTeley` is a package that builds upon the topic modeling capabilities provided by `BERTopic` while addressing unqiue issues that arise when conducting topic
+modeling on a corpus consisting of scientific articles. If you were to take a corpus of scientific articles and use standard topic modeling practices the resulting
+topic words would be dominated by words with high frequency and low value. These kinds of words stem from two sources. The first being the rigid structural requirements
+scientific articles posses leads to words like _introduction_, _appendix_, and _results_. 
+Second, all scientific articles share a similar purpose: to present the findings of a research project. Words inherent to a document with this purpose will show up in many 
+scientific articles regardless of their domain. This can include words like _show_, _use_, and _propose_. By removing these high frequency words, and their stems and affixes,
+the resulting topic words provide a much clearer understanding of the contents of the corpus.
 
-`Gala` was designed to be used by both astronomical researchers and by
-students in courses on gravitational dynamics or astronomy. It has already been
-used in a number of scientific publications [@Pearson:2017] and has also been
-used in graduate courses on Galactic dynamics to, e.g., provide interactive
-visualizations of textbook material [@Binney:2008]. The combination of speed,
-design, and support for Astropy functionality in `Gala` will enable exciting
-scientific explorations of forthcoming data releases from the *Gaia* mission
-[@gaia] by students and experts alike.
 
 # Features
 
