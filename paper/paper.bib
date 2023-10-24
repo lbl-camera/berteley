@@ -4,3 +4,122 @@
   journal={arXiv preprint arXiv:2203.05794},
   year={2022}
   }
+
+@article{specter,
+  author       = {Arman Cohan and
+                  Sergey Feldman and
+                  Iz Beltagy and
+                  Doug Downey and
+                  Daniel S. Weld},
+  title        = {{SPECTER:} Document-level Representation Learning using Citation-informed
+                  Transformers},
+  journal      = {CoRR},
+  volume       = {abs/2004.07180},
+  year         = {2020},
+  url          = {https://arxiv.org/abs/2004.07180},
+  eprinttype    = {arXiv},
+  eprint       = {2004.07180},
+  timestamp    = {Sat, 23 Jan 2021 01:11:17 +0100},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-2004-07180.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+@misc{mysore2021aspire,
+      title={Multi-Vector Models with Textual Guidance for Fine-Grained Scientific Document Similarity},
+      author={Sheshera Mysore and Arman Cohan and Tom Hope},
+      year={2021},
+      eprint={2111.08366},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+
+@article{scibert,
+  author       = {Iz Beltagy and
+                  Arman Cohan and
+                  Kyle Lo},
+  title        = {SciBERT: Pretrained Contextualized Embeddings for Scientific Text},
+  journal      = {CoRR},
+  volume       = {abs/1903.10676},
+  year         = {2019},
+  url          = {http://arxiv.org/abs/1903.10676},
+  eprinttype    = {arXiv},
+  eprint       = {1903.10676},
+  timestamp    = {Mon, 01 Apr 2019 14:07:37 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-1903-10676.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{reimers-2019-sentence-bert,
+  title = "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
+  author = "Reimers, Nils and Gurevych, Iryna",
+  booktitle = "Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing",
+  month = "11",
+  year = "2019",
+  publisher = "Association for Computational Linguistics",
+  url = "https://arxiv.org/abs/1908.10084",
+}
+
+@inproceedings{doogan-buntine-2021-topic,
+    title = "Topic Model or Topic Twaddle? Re-evaluating Semantic Interpretability Measures",
+    author = "Doogan, Caitlin  and
+      Buntine, Wray",
+    booktitle = "Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jun,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.naacl-main.300",
+    doi = "10.18653/v1/2021.naacl-main.300",
+    pages = "3824--3848",
+    abstract = "When developing topic models, a critical question that should be asked is: How well will this model work in an applied setting? Because standard performance evaluation of topic interpretability uses automated measures modeled on human evaluation tests that are dissimilar to applied usage, these models{'} generalizability remains in question. In this paper, we probe the issue of validity in topic model evaluation and assess how informative coherence measures are for specialized collections used in an applied setting. Informed by the literature, we propose four understandings of interpretability. We evaluate these using a novel experimental framework reflective of varied applied settings, including human evaluations using open labeling, typical of applied research. These evaluations show that for some specialized collections, standard coherence measures may not inform the most appropriate topic model or the optimal number of topics, and current interpretability performance validation methods are challenged as a means to confirm model quality in the absence of ground truth data.",
+}
+
+@inproceedings{metrics,
+author = {R\"{o}der, Michael and Both, Andreas and Hinneburg, Alexander},
+title = {Exploring the Space of Topic Coherence Measures},
+year = {2015},
+isbn = {9781450333177},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2684822.2685324},
+doi = {10.1145/2684822.2685324},
+abstract = {Quantifying the coherence of a set of statements is a long standing problem with many potential applications that has attracted researchers from different sciences. The special case of measuring coherence of topics has been recently studied to remedy the problem that topic models give no guaranty on the interpretablity of their output. Several benchmark datasets were produced that record human judgements of the interpretability of topics. We are the first to propose a framework that allows to construct existing word based coherence measures as well as new ones by combining elementary components. We conduct a systematic search of the space of coherence measures using all publicly available topic relevance data for the evaluation. Our results show that new combinations of components outperform existing measures with respect to correlation to human ratings. nFinally, we outline how our results can be transferred to further applications in the context of text mining, information retrieval and the world wide web.},
+booktitle = {Proceedings of the Eighth ACM International Conference on Web Search and Data Mining},
+pages = {399–408},
+numpages = {10},
+keywords = {topic coherence, topic evaluation, topic model},
+location = {Shanghai, China},
+series = {WSDM '15}
+}
+
+@inproceedings{lisena-etal-2020-tomodapi,
+    title = "{TOMODAPI}: A Topic Modeling {API} to Train, Use and Compare Topic Models",
+    author = "Lisena, Pasquale  and
+      Harrando, Ismail  and
+      Kandakji, Oussama  and
+      Troncy, Raphael",
+    booktitle = "Proceedings of Second Workshop for NLP Open Source Software (NLP-OSS)",
+    month = nov,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.nlposs-1.19",
+    doi = "10.18653/v1/2020.nlposs-1.19",
+    pages = "132--140",
+    abstract = "From LDA to neural models, different topic modeling approaches have been proposed in the literature. However, their suitability and performance is not easy to compare, particularly when the algorithms are being used in the wild on heterogeneous datasets. In this paper, we introduce ToModAPI (TOpic MOdeling API), a wrapper library to easily train, evaluate and infer using different topic modeling algorithms through a unified interface. The library is extensible and can be used in Python environments or through a Web API.",
+}
+
+@article{DBLP:journals/corr/abs-1907-04907,
+  author       = {Adji B. Dieng and
+                  Francisco J. R. Ruiz and
+                  David M. Blei},
+  title        = {Topic Modeling in Embedding Spaces},
+  journal      = {CoRR},
+  volume       = {abs/1907.04907},
+  year         = {2019},
+  url          = {http://arxiv.org/abs/1907.04907},
+  eprinttype    = {arXiv},
+  eprint       = {1907.04907},
+  timestamp    = {Wed, 17 Jul 2019 10:27:36 +0200},
+  biburl       = {https://dblp.org/rec/journals/corr/abs-1907-04907.bib},
+  bibsource    = {dblp computer science bibliography, https://dblp.org}
+}

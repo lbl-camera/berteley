@@ -28,7 +28,7 @@ affiliations:
    index: 2
  - name: Independent Researcher, Country
    index: 3
-date: 23 October 2023
+date: 24 October 2023
 bibliography: paper.bib
 
 ---
@@ -39,8 +39,7 @@ Being able to discover the underlying themes and patterns in a collection of doc
 parse the overwhelming amount of information that is available today. Topic modeling is a Natural Language Processing
 (NLP) technique that was designed specifically for this task. In early 2022 BERTopic was introduced and provided a highly
 modular framework for creating customizable topic models and introducing a new method to extract the topic words from their
-respective topics. This package is widely used for topic modeling on a variety of corpora. However, when conducting topic modeling
-on a corpus consisting of scientific articles 
+respective topics. This package is widely used for topic modeling on a variety of corpora. 
 
 # Statement of need
 
@@ -63,13 +62,45 @@ users can more easily compare the performance of different topic models trained 
 
 
 # Features
+To remedy the unique issues that appear when conducting topic modeling on a corpus of scientific articles a preprocessing suite was created and consists of the following steps:
+ - Remove empty strings
+ - Remove html tags
+ - Expand all contractions
+ - Remove all punctuation
+ - Remove excess whitespace created by the previous steps
+ - Lemmatization
+ - Standard and Scientifically-irrelevant stopword removal
 
+Users have the option of using individual functions, or make use of the `preprocess` function which acts as a wrapper and calls these functions in order. When working with a large corpus
+and reasonable computing resources users can also make use of the `preprocess_parallel` function to distribute the workload across multiple workers and keep track of all of their progress
+with a single progress bar.
+
+`BERTeley` also presents users with a choice of three language models pre-trained specifically on scientific articles: Specter,
+Aspire, and SciBERT. BERTopic requires little to no setup when the selected language model comes from the `SentenceTransformer` library.
+However, the Aspire and SciBERT language models are not available in this package, so several extra steps are required to obtain a model in the proper form to interface with BERTopic.
+Instead of requiring the user to take these steps, we offer a flexible hyperparameter for the language model. The language model argument can take in either a \texttt{SentenceTransformer}
+object if the user wishes to use a different language model, or it can also take in a string containing the name of one of the pre-selected models.
+If a proper string is passed, the model is downloaded and built for the user ready to interface with BERTopic.
+
+Finally, `BERTeley` provides topic modeling metric calculation at runtime. The most common metrics used to evaluate topic models are Topic Coherence and Topic Diversity\cite{metrics}. Topic Coherence is a measure of the word similarities of the top words within a given topic \cite{coherence},
+and it works as a coefficient to gauge intra-cluster correlation. This measure ranges from $[-1, 1]$ where 1 indicates a perfect correlation between the topic words and -1 indicates that the topic words are not related at all.
+There are several variations of Topic Coherence which use different formulas for calculating the metric \cite{lisena-etal-2020-tomodapi}. Here we use the C\_v measure, which considers the co-occurrence of topic words in
+a predefined external corpus, as it has the highest correlation with human interpretation when evaluating topic models\cite{lisena-etal-2020-tomodapi}. 
+
+Topic Diversity indicates the percentage of unique topic words and measures the repetitiveness of a topic model, with values ranging from $[0, 1]$, with 1 indicating that all topic words are unique and 0 indicating that
+there are no unique topic words \cite{DBLP:journals/corr/abs-1907-04907}. This metric works as a coefficient to gauge inter-cluster correlation. The `Octis` library provides a wealth of topic modeling metrics and means to calculate them.
 
 
 # Intended Use Case
+This package would allow users to expedite the literature review process on a project in a new domain that may be outside
+their area of expertise. When able to understand the types of content that is published in the area, researchers can focus
+on understanding documents in the relevant areas.
 
 # Acknowledgements
 
-This work was supported by the US Department of Energy (DOE) Office of Science Advanced Scientific Computing Research (ASCR) and Basic Energy Sciences (BES) under Contract No. DE-AC02-05CH11231 to the Center for Advanced Mathematics for Energy Research Applications (CAMERA) program. It also included support from the DOE ASCR-funded project Analysis and Machine Learning Across Domains (AMLXD), which is supported by the Office of Science of the U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
+This work was supported by the US Department of Energy (DOE) Office of Science Advanced Scientific Computing Research (ASCR) and Basic Energy Sciences (BES)
+under Contract No. DE-AC02-05CH11231 to the Center for Advanced Mathematics for Energy Research Applications (CAMERA) program. 
+It also included support from the DOE ASCR-funded project Analysis and Machine Learning Across Domains (AMLXD), which is supported by the Office of Science of the
+U.S. Department of Energy under Contract No. DE-AC02-05CH11231.
 
 # References
