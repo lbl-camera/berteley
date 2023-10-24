@@ -43,7 +43,7 @@ respective topics. This package is widely used for topic modeling on a variety o
 
 # Statement of need
 
-`BERTeley` is a package that builds upon the topic modeling capabilities provided by `BERTopic` while addressing unqiue issues that arise when conducting topic
+`BERTeley` is a package that builds upon the topic modeling capabilities provided by `BERTopic` [@grootendorst2022bertopic] while addressing unique issues that arise when conducting topic
 modeling on a corpus consisting of scientific articles. If you were to take a corpus of scientific articles and use standard topic modeling practices the resulting
 topic words would be dominated by words with high frequency and low value. These kinds of words come from two sources: The first being the rigid structural requirements of
 scientific articles, and the shared purpose of presenting research all scientific articles have. For example, if we had a corpus of JOSS papers and used standard topic
@@ -78,17 +78,17 @@ with a single progress bar.
 `BERTeley` also presents users with a choice of three language models pre-trained specifically on scientific articles: Specter,
 Aspire, and SciBERT. BERTopic requires little to no setup when the selected language model comes from the `SentenceTransformer` library.
 However, the Aspire and SciBERT language models are not available in this package, so several extra steps are required to obtain a model in the proper form to interface with BERTopic.
-Instead of requiring the user to take these steps, we offer a flexible hyperparameter for the language model. The language model argument can take in either a \texttt{SentenceTransformer}
+Instead of requiring the user to take these steps, we offer a flexible hyperparameter for the language model. The language model argument can take in either a `SentenceTransformer`
 object if the user wishes to use a different language model, or it can also take in a string containing the name of one of the pre-selected models.
 If a proper string is passed, the model is downloaded and built for the user ready to interface with BERTopic.
 
-Finally, `BERTeley` provides topic modeling metric calculation at runtime. The most common metrics used to evaluate topic models are Topic Coherence and Topic Diversity\cite{metrics}. Topic Coherence is a measure of the word similarities of the top words within a given topic \cite{coherence},
+Finally, `BERTeley` provides topic modeling metric calculation at runtime. The most common metrics used to evaluate topic models are Topic Coherence and Topic Diversity [@metrics]. Topic Coherence is a measure of the word similarities of the top words within a given topic [@coherence],
 and it works as a coefficient to gauge intra-cluster correlation. This measure ranges from $[-1, 1]$ where 1 indicates a perfect correlation between the topic words and -1 indicates that the topic words are not related at all.
-There are several variations of Topic Coherence which use different formulas for calculating the metric \cite{lisena-etal-2020-tomodapi}. Here we use the C\_v measure, which considers the co-occurrence of topic words in
-a predefined external corpus, as it has the highest correlation with human interpretation when evaluating topic models\cite{lisena-etal-2020-tomodapi}. 
+There are several variations of Topic Coherence which use different formulas for calculating the metric [@lisena-etal-2020-tomodapi]. Here we use the C_v measure, which considers the co-occurrence of topic words in
+a predefined external corpus, as it has the highest correlation with human interpretation when evaluating topic models [@lisena-etal-2020-tomodapi]. 
 
 Topic Diversity indicates the percentage of unique topic words and measures the repetitiveness of a topic model, with values ranging from $[0, 1]$, with 1 indicating that all topic words are unique and 0 indicating that
-there are no unique topic words \cite{DBLP:journals/corr/abs-1907-04907}. This metric works as a coefficient to gauge inter-cluster correlation. The `Octis` library provides a wealth of topic modeling metrics and means to calculate them.
+there are no unique topic words [@DBLP:journals/corr/abs-1907-04907]. This metric works as a coefficient to gauge inter-cluster correlation. The `Octis` library provides a wealth of topic modeling metrics and means to calculate them.
 
 
 # Intended Use Case
