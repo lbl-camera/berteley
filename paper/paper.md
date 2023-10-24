@@ -46,14 +46,25 @@ on a corpus consisting of scientific articles
 
 `BERTeley` is a package that builds upon the topic modeling capabilities provided by `BERTopic` while addressing unqiue issues that arise when conducting topic
 modeling on a corpus consisting of scientific articles. If you were to take a corpus of scientific articles and use standard topic modeling practices the resulting
-topic words would be dominated by words with high frequency and low value. These kinds of words stem from two sources. The first being the rigid structural requirements
-scientific articles posses leads to words like _introduction_, _appendix_, and _results_. 
-Second, all scientific articles share a similar purpose: to present the findings of a research project. Words inherent to a document with this purpose will show up in many 
-scientific articles regardless of their domain. This can include words like _show_, _use_, and _propose_. By removing these high frequency words, and their stems and affixes,
-the resulting topic words provide a much clearer understanding of the contents of the corpus.
+topic words would be dominated by words with high frequency and low value. These kinds of words come from two sources: The first being the rigid structural requirements of
+scientific articles, and the shared purpose of presenting research all scientific articles have. For example, if we had a corpus of JOSS papers and used standard topic
+modeling approaches structural words like _summary_, _statement_, and _acknowledgements_ would dominate the resulting topic words as they are hard requirements for the structure
+of the paper. Furthermore, words that capture the underlying shared attributes of most, or all, of the JOSS papers would similarly dominate the results. These can be words like
+_open-source_, _collaborative_, _python_, _package_, and _software_. By removing high frequency low value words (and their respective stems and affixes) the resulting final
+topics provide a much clearer representation of the latent topics within the corpus.
+
+`BERTeley` also provides quality-of-life improvements to `BERTopic` for conducting topic modeling on scientific articles. Modern transformer-based topic modeling approaches
+all share a similar first step: creating a vector representation, an embedding, of the desired documents. This is a crucial part in the topic modeling process, as low quality 
+embeddings will be detrimental to the subsequent steps in the topic modeling process. The first improvement is a set of pre-selected language models that have been pre-trained
+on scientific data. Since these models have been trained exclusively on scientific data, their embeddings better capture the sometimes esoteric text found in scientific articles. 
+Compared to standard language models which have been trained on a variety of text, the embeddings created by the scientific language models provide a stronger foundation for conducting
+topic modeling. Secondly, topic modeling metric calculation at runtime was added. `BERTopic` allows for an easy iterable process in creating topic models, by adding topic modeling metrics
+users can more easily compare the performance of different topic models trained on the same corpus.
 
 
 # Features
+
+
 
 # Intended Use Case
 
