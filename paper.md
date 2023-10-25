@@ -82,8 +82,8 @@ Users have the option of using individual functions, or make use of the `preproc
 and reasonable computing resources users can also make use of the `preprocess_parallel` function to distribute the workload across multiple workers and keep track of all of their progress
 with a single progress bar.
 
-`BERTeley` also presents users with a choice of three language models pre-trained specifically on scientific articles: Specter,
-Aspire, and SciBERT. `BERTopic` is able to interface with language models from the `SentenceTransformer` [@reimers-2019-sentence-bert] library easily. Simply downloading
+`BERTeley` also presents users with a choice of three language models pre-trained specifically on scientific articles: Specter [@Specter],
+Aspire [@mysore2021aspire], and SciBERT [@scibert]. `BERTopic` is able to interface with language models from the `SentenceTransformer` [@reimers-2019-sentence-bert] library easily. Simply downloading
 a `SentenceTransformer` object and passing it in as an argument works right away. However, language models not available in the `SentenceTransformer`
 library, like Aspire and SciBERT, require extra setup. `BERTeley` allows the user to select any of these three models by simply passing in the name as a string.
 If Aspire or SciBERT are selected, we carry out the extra steps so the language model can properly interface with `BERTopic`. If users have another language model
