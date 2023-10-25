@@ -11,14 +11,14 @@ authors:
     equal-contrib: true
     corresponding: true # (This is how to denote the corresponding author)
     affiliation: "1" # (Multiple affiliations must be quoted)
-  - name: Daniela Ushizima
-    orcid: 0000-0002-7363-9468
-    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
-    affiliation: 1
   - name: Ronald Pandolfi
     orcid: 0000-0003-0824-8548    
     affiliation: 1
   - name: Jeffrey Donatelli
+    equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
+    affiliation: 1
+  - name: Daniela Ushizima
+    orcid: 0000-0002-7363-9468
     equal-contrib: true # (This is how you can denote equal contributions between multiple authors)
     affiliation: 1
 affiliations:
