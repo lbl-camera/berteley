@@ -24,11 +24,7 @@ authors:
 affiliations:
  - name: Lawrence Berkeley National Laboratory, United States
    index: 1
- - name: Institution Name, Country
-   index: 2
- - name: Independent Researcher, Country
-   index: 3
-date: 24 October 2023
+date: 25 October 2023
 bibliography: paper.bib
 
 ---
