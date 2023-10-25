@@ -37,13 +37,14 @@ bibliography: paper.bib
 
 Being able to discover the underlying themes and patterns in a collection of documents is necessary in order to
 parse the overwhelming amount of information that is available today. Topic modeling is a Natural Language Processing
-(NLP) technique that was designed specifically for this task. In early 2022 BERTopic was introduced and provided a highly
+(NLP) technique that was designed specifically for this task. In early 2022 `BERTopic` [@grootendorst2022bertopic] was introduced and provided a highly
 modular framework for creating customizable topic models and introducing a new method to extract the topic words from their
-respective topics. This package is widely used for topic modeling on a variety of corpora. 
+respective topics which resulted in superior performance compared to other modern topic modeling methods. This package is widely used for topic modeling
+on a variety of corpora. However, the resulting topics from a corpus of scientific articles leave a lot to be desired.
 
 # Statement of need
 
-`BERTeley` is a package that builds upon the topic modeling capabilities provided by `BERTopic` [@grootendorst2022bertopic] while addressing unique issues that arise when conducting topic
+`BERTeley` is a package that builds upon the topic modeling capabilities provided by `BERTopic`  while addressing unique issues that arise when conducting topic
 modeling on a corpus consisting of scientific articles. If you were to take a corpus of scientific articles and use standard topic modeling practices the resulting
 topic words would be dominated by words with high frequency and low value. These kinds of words come from two sources: The first being the rigid structural requirements of
 scientific articles, and the shared purpose of presenting research all scientific articles have. For example, if we had a corpus of JOSS papers and used standard topic
@@ -82,7 +83,7 @@ and reasonable computing resources users can also make use of the `preprocess_pa
 with a single progress bar.
 
 `BERTeley` also presents users with a choice of three language models pre-trained specifically on scientific articles: Specter,
-Aspire, and SciBERT. `BERTopic` is able to interface with language models from the `SentenceTransformer` library easily. Simply downloading
+Aspire, and SciBERT. `BERTopic` is able to interface with language models from the `SentenceTransformer` [@reimers-2019-sentence-bert] library easily. Simply downloading
 a `SentenceTransformer` object and passing it in as an argument works right away. However, language models not available in the `SentenceTransformer`
 library, like Aspire and SciBERT, require extra setup. `BERTeley` allows the user to select any of these three models by simply passing in the name as a string.
 If Aspire or SciBERT are selected, we carry out the extra steps so the language model can properly interface with `BERTopic`. If users have another language model
@@ -91,7 +92,7 @@ Finally, `BERTeley` provides topic modeling metric calculation at runtime and re
 on a given corpus.  
 
 # Intended Use Case
-This package would allow users to expedite the literature review process on a project in a new domain that may be outside
+This package would allow researchers to expedite the literature review process on a project in a new domain that may be outside
 their area of expertise. When able to understand the types of content that is published in the area, researchers can focus
 on understanding documents in the relevant areas.
 
