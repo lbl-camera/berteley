@@ -29,33 +29,28 @@ bibliography: paper.bib
 # Summary
 
 Topic modeling is a Natural Language Processing
-(NLP) technique designed to discover the underlying themes and patterns in a collection of documents (corpus). In early 2022 `BERTopic` [@grootendorst2022bertopic]  became a fairly popular Python library in topic modeling, leveraging transformer-based embeddings, such as those from BERT (Bidirectional Encoder Representations from Transformers) to create dense vector representations of text. In order to enable more streamlined topic modeling of scientific articles `BERTeley`, which builds upon BERTopic, was developed to address several unique challenges in extracting meaningful topics from a corpus of scientific articles while also providing some quality-of-life improvements.
+(NLP) technique designed to discover the underlying themes and patterns in a collection of documents (corpus). In early 2022 `BERTopic` [@grootendorst2022bertopic] became a fairly popular Python library in topic modeling, leveraging transformer-based embeddings, such as those from BERT (Bidirectional Encoder Representations from Transformers) to create dense vector representations of text. In order to enable more streamlined topic modeling of scientific articles `BERTeley`, which builds upon BERTopic, was developed to address unique challenges in extracting meaningful topics from a corpus of scientific articles while also providing some quality-of-life improvements.
 
 
-For example, BERTeley’s preprocessing suite helps to remove high-frequency, low-value words. In addition, specific scientific language models are pre-selected so users have reasonable choices for the embedding model to create
-vector representations of the documents. Finally, BERTeley encapsulates topic modeling metric calculation at runtime for interpretable topic model comparison.
+For example, BERTeley’s preprocessing suite helps to remove high-frequency, low-value words. In addition, three scientific language models are pre-selected so users have reasonable choices to create
+vector representations of the documents, which store the results from the embedding models. In addition, BERTeley seamlessly performs topic modeling metrics calculation during runtime, enabling an insightful comparison of topic models, and more interpretability.
 
-
-
-
-
+This package has been used to allow researchers to expedite the literature review process and also to quickly survey new and possibly unfamiliar research areas.
 
 
 
 # Statement of need
 
-When applied to a corpus of scientific articles, standard topic modeling practices typically produce topic words that are dominated by general scientific terminology which is uninformative to the specific content of the article. These kinds of words come from two sources: The rigid structural requirements of
-scientific articles, and the shared purpose of presenting research all scientific articles have. For example, if we had a corpus of JOSS papers and used standard topic
-modeling approaches structural words such as _summary_, _statement_, and _acknowledgments_ would dominate the resulting topic words as they are hard requirements for the structure
+When applied to a corpus of scientific articles, standard topic modeling practices typically produce topic words that are dominated by general scientific terminology which carry less significance to the specific content of the article. These words come from two sources: The rigid structural requirements of
+scientific articles, and the shared purpose of presenting research, such as describing materials and methods. For example, if we had a corpus of JOSS papers and used standard topic
+modeling approaches structural words, such as _summary_, _statement_, and _acknowledgments_ would dominate the resulting topic words as they are hard requirements for the structure
 of the paper. Furthermore, words that capture the underlying shared attributes of most, or all, of the JOSS papers would similarly dominate the results. This often includes words such as
 _open-source_, _collaborative_, _python_, _package_, and _software_.
 
 
 Modern transformer-based topic modeling approaches share a similar first step: creating a vector representation(embedding) of the desired documents. This step is a crucial part of the topic modeling process, as low-quality 
 embeddings will be detrimental to the subsequent steps in the topic modeling process. The first improvement is a set of pre-selected language models that have been pre-trained
-on scientific data. Since these models have been trained exclusively on scientific data, their embeddings better capture the sometimes esoteric text found in scientific articles. 
-Compared to standard language models which have been trained on a variety of texts, the embeddings created by the scientific language models provide a stronger foundation for conducting
-topic modeling on a corpus of scientific articles. 
+on scientific data. These specialized models, trained solely on scientific data, generate embeddings that more accurately represent the unique language of scientific articles. This results in a more solid foundation for performing topic modeling on scientific text, compared to standard language models trained on diverse text types.. 
 
 
 
@@ -65,6 +60,7 @@ Finally, in order to better compare topic models that are trained on the same co
 
 
 # Features
+`BERTeley’ is a Python package that aims to overcome current limitations in scientific topic modeling through the use of systematic text cleaning
 To remedy the unique issues that appear when conducting topic modeling on a corpus of scientific articles, a preprocessing suite was created and consists of the following steps:
 
  - Remove empty strings
@@ -87,18 +83,12 @@ they would prefer to use for creating document embeddings, a `SentenceTransforme
 
 Finally, `BERTopic` allows for an easy iterable process in creating topic models, by adding topic modeling metrics
 users can more easily compare the performance of different topic models trained on the same corpus
-Topic Coherence is a measure of the word similarities of the top words within a given topic [@coherence],
-and it works as a coefficient to gauge intra-cluster correlation. This measure ranges from $[-1, 1]$ where 1 indicates a perfect correlation between the topic words and -1 indicates that the topic words are unrelated.
+Topic Coherence quantifies the semantic similarities among the top words within a specified topic, functioning as a coefficient to evaluate the degree of intra-cluster correlation [@coherence]. This measure ranges from $[-1, 1]$ where 1 indicates a perfect correlation between the topic words and -1 indicates that the topic words are unrelated.
 There are several variations of Topic Coherence which use different formulas for calculating the metric [@lisena-etal-2020-tomodapi]. Here we use the C_v measure, which considers the co-occurrence of topic words in
 a predefined external corpus, as it has the highest correlation with human interpretation when evaluating topic models [@lisena-etal-2020-tomodapi]. 
 Topic Diversity indicates the percentage of unique topic words and measures the repetitiveness of a topic model, with values ranging from $[0, 1]$, with 1 indicating that all topic words are unique and 0 indicating that
-there are no unique topic words [@DBLP:journals/corr/abs-1907-04907]. This metric works as a coefficient to gauge inter-cluster correlation. The `Octis` library provides a wealth of topic modeling metrics and means to calculate them. 
+there are no unique topic words [@DBLP:journals/corr/abs-1907-04907]. This metric functions as a coefficient, offering a quantifiable measure of inter-cluster correlation. The `Octis` library, rich in resources for topic modeling metrics, facilitates the computation of this particular coefficient, ensuring a comprehensive analytical approach. 
 
-# Intended Use Case
-This package can be used to allow researchers to expedite the literature review process on a project in a new domain that may be outside
-their area of expertise.
-When researchers are able to understand the different types of content in the area they can focus
-on understanding documents in the relevant areas.
 
 # Acknowledgements
 
