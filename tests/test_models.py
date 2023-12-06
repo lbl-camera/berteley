@@ -71,10 +71,14 @@ def test_bigram(data):
 
 
 def test_save(data, test, tmp_path):
-    save_documents(docs = data, topics = test['topics'], path = tmp_path)
+    path = tmp_path
+    save_documents(docs = data, topics = test['topics'], path = path)
 
-    assert os.path.exists(str(tmp_path) + "/" + "Topic 1")
-    assert os.path.exists(str(tmp_path) + "/" + "Topic -1")
+    # assert os.path.exists(str(tmp_path) + "/" + "Topic 1")
+    # assert os.path.exists(str(tmp_path) + "/" + "Topic -1")
+
+    for topic in set(test['topics']):
+        assert os.path.exists(str(path) + "/" + f"Topic {topic}")
 
 def test_figures(test, tmp_path):
     # os.remove(path + "barchart.html")

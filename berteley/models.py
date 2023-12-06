@@ -305,14 +305,14 @@ def save_documents(docs: List[str], topics: List[int], topic_labels=None, path="
     # TODO topic labels as directory names
 
     unique_topics = set(topics)
+    doc_num = 1
     for doc, topic in zip(docs, topics):
 
-        if not os.path.exists(f"{path}/Topic {topic}"):
-            os.makedirs(f"{path}/Topic {topic}")
+        if not os.path.exists(f"{path}/Topic {topic}/"):
+            os.makedirs(f"{path}/Topic {topic}/")
 
-        short_title = doc[:10]
-
-        with open(f"{path}/Topic {topic}/{short_title}.txt", 'w') as f:
+        with open(f"{path}/Topic {topic}/Document {doc_num}.txt", 'w') as f:
             f.write(doc)
 
+        doc_num = doc_num + 1
     return None
