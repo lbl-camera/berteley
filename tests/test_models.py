@@ -3,7 +3,7 @@ import os
 from sklearn.datasets import fetch_20newsgroups
 import numpy as np
 
-from berteley.models import initialize_model, fit, create_barcharts, _calculate_metrics
+from berteley.models import initialize_model, fit, create_barcharts, _calculate_metrics, save_documents
 
 # gets rid of extraneous warnings
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -69,6 +69,16 @@ def test_bigram(data):
     assert isinstance(metrics["Coherence"], np.float64)
     assert isinstance(metrics["Diversity"], float)
 
+
+def test_save(data, test, tmp_path):
+    path = tmp_path
+    save_documents(docs = data, topics = test['topics'], path = path)
+
+    # assert os.path.exists(str(tmp_path) + "/" + "Topic 1")
+    # assert os.path.exists(str(tmp_path) + "/" + "Topic -1")
+
+    for topic in set(test['topics']):
+        assert os.path.exists(str(path) + "/" + f"Topic {topic}")
 
 def test_figures(test, tmp_path):
     # os.remove(path + "barchart.html")

@@ -7,6 +7,7 @@ from gensim.models.coherencemodel import CoherenceModel
 from octis.evaluation_metrics.diversity_metrics import TopicDiversity
 from sentence_transformers import SentenceTransformer, models
 from typing import List, Dict, Tuple, Union, Literal
+import os
 
 nltk.download('stopwords')
 
@@ -276,3 +277,42 @@ def create_barcharts(topics, topic_model: BERTopic, path=""):
         fig.write_html(fig_name)
         fig.write_image(fig_name_png)
     return fig
+
+
+def save_documents(docs: List[str], topics: List[int], topic_labels=None, path="results"):
+    """
+    Saves and organizes the documents into folders for their respective topics
+    For example:
+
+        All documents assigned to topic 1 are saved into the directory "Topic 1"
+
+    Parameters
+    ----------
+    docs
+            List of documents
+    topics
+            List of topic assignments for each document
+    topic_labels
+        Optional argument for the labels of each topic. The corresponding directory names
+        will be renamed to the associated topic label. By default the directory will be named
+        "Topic X/"
+
+    Returns
+    -------
+    None
+    """
+
+    # TODO topic labels as directory names
+
+    unique_topics = set(topics)
+    doc_num = 1
+    for doc, topic in zip(docs, topics):
+
+        if not os.path.exists(f"{path}/Topic {topic}/"):
+            os.makedirs(f"{path}/Topic {topic}/")
+
+        with open(f"{path}/Topic {topic}/Document {doc_num}.txt", 'w') as f:
+            f.write(doc)
+
+        doc_num = doc_num + 1
+    return None
