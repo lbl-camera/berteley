@@ -312,7 +312,7 @@ def save_documents(docs: List[str], topics: List[int], topic_labels=None, path="
 
         short_title = doc[:10]
 
-        with open(f"{path}/Topic {topic}/short_title.txt", 'w') as f:
+        with open(f"{path}/Topic {topic}/{short_title}.txt", 'w') as f:
             f.write(doc)
 
     return None
