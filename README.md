@@ -97,6 +97,26 @@ thereof, in binary and source code form.
 
 ## Credits
 
+Please reference this work:
+ <div class="row">
+      <pre class="col-md-offset-2 col-md-8">
+      @article{Berteley,
+      title = {Benchmarking topic models on scientific articles using BERTeley},
+      journal = {Natural Language Processing Journal},
+      volume = {6},
+      pages = {100044},
+      year = {2024},
+      issn = {2949-7191},
+      doi = {https://doi.org/10.1016/j.nlp.2023.100044},
+      url = {https://www.sciencedirect.com/science/article/pii/S2949719123000419},
+      author = {Eric Chagnon and Ronald Pandolfi and Jeffrey Donatelli and Daniela Ushizima},
+      keywords = {NLP, Topic modeling, Scientific articles, Transformers},
+      abstract = {The introduction of BERTopic marked a crucial advancement in topic modeling and presented a topic model that outperformed both traditional and modern topic models in terms of topic modeling metrics on a variety of corpora. However, unique issues arise when topic modeling is performed on scientific articles. This paper introduces BERTeley, an innovative tool built upon BERTopic, designed to alleviate these shortcomings and improve the usability of BERTopic when conducting topic modeling on a corpus consisting of scientific articles. This is accomplished through BERTeley’s three main features: scientific article preprocessing, topic modeling using pre-trained scientific language models, and topic model metric calculation. Furthermore, an experiment was conducted comparing topic models using four different language models in three corpora consisting of scientific articles.}
+      }
+      </pre>
+    </div>
+
+
 This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter)
 and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
 project template.
