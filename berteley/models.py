@@ -11,7 +11,7 @@ import os
 
 nltk.download('stopwords')
 
-nltk.download('punkt')
+nltk.download('punkt_tab')
 
 
 def initialize_model(embedding_model: Union[SentenceTransformer, str] = "specter",
@@ -87,13 +87,13 @@ def fit(data: List[str],
         embedding_model: Union[SentenceTransformer, str] = "specter",
         nr_topics: int = None,
         n_gram_range: Union[Literal["unigram", "bigram"], Tuple[int, int]] = "unigram",
-        verbose: bool = False):
+        verbose: bool = False,
+        **bertopic_kwargs):
     """
         Fits a BERTopic model on the data. After fitting the topic assigned to each document is stored
         in the 'topics' attribute, the coherence and diversity measures are stored in the
         'coherence' and 'diversity' attributes respectively, and the amount of documents assigned to each topic
         are stored in the 'topic_sizes' attribute.
-
 
         Parameters
         ----------
@@ -107,6 +107,18 @@ def fit(data: List[str],
                 String indicating whether the user would like unigram or bigram, or tuple of ints.
         verbose
                 Boolean indicating verbose output.
+        **bertopic_kwargs
+                Additional keyword arguments to pass to the BERTopic constructor.
+                Common options include:
+                - min_topic_size: Minimum size of topic (default: 10)
+                - umap_model: UMAP model for dimensionality reduction
+                - hdbscan_model: HDBSCAN model for clustering
+                - vectorizer_model: CountVectorizer model for topic representation
+                - ctfidf_model: Class-based TF-IDF model
+                - representation_model: Topic representation model
+                - calculate_probabilities: Whether to calculate probabilities (default: False)
+                - seed_topic_list: List of seed topics
+                - top_n_words: Number of top words per topic (default: 20)
 
         Returns
         -------
@@ -134,7 +146,8 @@ def fit(data: List[str],
     topic_model = BERTopic(embedding_model=embedding_model,
                            nr_topics=nr_topics,
                            verbose=verbose,
-                           **opts)
+                           **opts,
+                           **bertopic_kwargs)
     topics, probabilities = topic_model.fit_transform(data)
     metrics = _calculate_metrics(data, topic_model, topics)
     topic_sizes = _calculate_topic_sizes(topics)
