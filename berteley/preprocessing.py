@@ -18,6 +18,7 @@ from alive_progress import alive_it, alive_bar
 from typing import List
 
 nltk.download('stopwords')
+nltk.download('punkt_tab')
 try:
     nlp = spacy.load('en_core_web_lg')
 except OSError:
